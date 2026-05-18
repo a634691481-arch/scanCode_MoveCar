@@ -1,29 +1,6 @@
 <template>
-  <view class="page-container">
-    <!-- 顶部渐变背景 -->
-    <view class="hero-bg">
-      <view class="hero-wave"></view>
-    </view>
-
-    <!-- 自定义导航栏 -->
-    <view class="nav-bar" :style="{ paddingTop: safeAreaTop + 'px' }">
-      <view class="nav-content">
-        <view class="nav-title">
-          <yy-icon name="ri:car-line" size="22" color="#ffffff" />
-          <text class="nav-title-text">挪车助手</text>
-        </view>
-        <view class="nav-actions">
-          <view class="nav-btn" @click="toHistory">
-            <yy-icon name="ri:history-line" size="22" color="#ffffff" />
-          </view>
-          <view class="nav-btn" @click="toMy">
-            <yy-icon name="ri:user-3-line" size="22" color="#ffffff" />
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <scroll-view scroll-y class="page-scroll" :style="{ paddingTop: (safeAreaTop + 56) + 'px' }">
+  <yy-paging v-model="state.dataList" @query="queryList" ref="paging" @scroll="scroll" v-bind="pagingConfig">
+    <view class="page-content">
       <!-- Hero 区域 -->
       <view class="hero-section">
         <view class="hero-card">
@@ -249,14 +226,33 @@
         </view>
       </view>
 
-      <view style="height: 40px;"></view>
-    </scroll-view>
-  </view>
+      <view style="height: 40rpx;"></view>
+    </view>
+  </yy-paging>
 </template>
 
 <script setup>
-  // ====== 安全区域 ======
-  const safeAreaTop = ref(0)
+  // ====== yy-paging 配置 ======
+  const pagingConfig = ref({
+    auto: false,
+    refresherEnabled: true,
+    showRefresherWhenReload: false,
+    loadingMoreEnabled: false,
+    showTabbar: false,
+    hideNav: false,
+    showNavBack: false,
+    navTitle: '挪车助手',
+    color: uni.$u.color.primary,
+  })
+
+  const state = ref({
+    isScroll: false,
+    dataList: [],
+  })
+
+  const paging = ref()
+
+  // ====== 业务状态 ======
   const showKeyboard = ref(false)
   const inputFocused = ref(false)
   const plateValue = ref('')
@@ -285,16 +281,21 @@
   })
 
   onLoad(() => {
-    // 获取安全区域顶部高度
-    const sysInfo = uni.getSystemInfoSync()
-    safeAreaTop.value = sysInfo.statusBarHeight || 0
-    // 加载历史搜索
     loadHistory()
   })
 
   onShow(() => {
     loadHistory()
   })
+
+  function scroll(e) {
+    state.value.isScroll = e.detail.scrollTop > 0
+  }
+
+  async function queryList(page, limit) {
+    await new Promise(resolve => setTimeout(resolve, 50))
+    paging.value?.complete([])
+  }
 
   function loadHistory() {
     const history = uni.getStorageSync('plate_search_history') || []
@@ -368,7 +369,7 @@
 
     // 跳转到联系页
     uni.navigateTo({
-      url: `/pages/contact/index?plate=${encodeURIComponent(plate)}&type=${type}`,
+      url: `/pages/index/contact?plate=${encodeURIComponent(plate)}&type=${type}`,
     })
   }
 
@@ -381,7 +382,7 @@
           const data = JSON.parse(res.result)
           if (data.plate && data.phone) {
             uni.navigateTo({
-              url: `/pages/contact/index?plate=${encodeURIComponent(data.plate)}&phone=${encodeURIComponent(data.phone)}&note=${encodeURIComponent(data.note || '')}&type=scan`,
+              url: `/pages/index/contact?plate=${encodeURIComponent(data.plate)}&phone=${encodeURIComponent(data.phone)}&note=${encodeURIComponent(data.note || '')}&type=scan`,
             })
           } else {
             uni.showToast({ title: '无效的挪车码', icon: 'none' })
@@ -401,112 +402,23 @@
   }
 
   function toQrcode() {
-    uni.navigateTo({ url: '/pages/qrcode/index' })
+    uni.navigateTo({ url: '/pages/my/qrcode' })
   }
 
   function toHistory() {
-    uni.navigateTo({ url: '/pages/history/index' })
+    uni.navigateTo({ url: '/pages/my/history' })
   }
 </script>
 
 <style lang="scss" scoped>
-  .page-container {
+  .page-content {
     min-height: 100vh;
     background: #f5f7fb;
-    position: relative;
-  }
-
-  /* 顶部渐变背景 */
-  .hero-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 260rpx;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #3b82f6 100%);
-    z-index: 0;
-    overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      width: 300rpx;
-      height: 300rpx;
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 50%;
-      top: -100rpx;
-      right: -60rpx;
-    }
-    &::after {
-      content: '';
-      position: absolute;
-      width: 200rpx;
-      height: 200rpx;
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 50%;
-      top: 60rpx;
-      right: 100rpx;
-    }
-  }
-
-  /* 导航栏 */
-  .nav-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-  }
-
-  .nav-content {
-    height: 56px;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .nav-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .nav-title-text {
-    font-size: 18px;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 1px;
-  }
-
-  .nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .nav-btn {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    &:active {
-      background: rgba(255, 255, 255, 0.15);
-    }
-  }
-
-  /* 页面滚动区 */
-  .page-scroll {
-    height: 100vh;
-    box-sizing: border-box;
+    padding-bottom: 24rpx;
   }
 
   /* Hero 区域 */
   .hero-section {
-    position: relative;
-    z-index: 10;
     padding: 12px 16px 0;
   }
 
@@ -515,10 +427,9 @@
     align-items: center;
     gap: 16px;
     padding: 20px;
-    background: rgba(255, 255, 255, 0.15);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #3b82f6 100%);
     border-radius: 20px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
   }
 
   .hero-icon-wrap {
@@ -554,8 +465,6 @@
     border-radius: 24px;
     padding: 24px 20px 20px;
     box-shadow: 0 8px 32px rgba(37, 99, 235, 0.08);
-    position: relative;
-    z-index: 10;
   }
 
   /* 输入区 */
@@ -628,15 +537,6 @@
         background: #1d4ed8;
         border-color: #1d4ed8;
       }
-    }
-
-    &.plate-separator {
-      width: 8px;
-      height: 4px;
-      background: #d1d5db;
-      border: none;
-      border-radius: 2px;
-      padding: 0;
     }
   }
 
@@ -927,8 +827,6 @@
     display: flex;
     gap: 10px;
     margin: 12px 16px 0;
-    position: relative;
-    z-index: 10;
   }
 
   .feature-card {

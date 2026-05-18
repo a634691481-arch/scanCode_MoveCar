@@ -10,11 +10,11 @@
           <yy-icon name="ri:arrow-left-s-line" size="24" color="#ffffff" />
         </view>
         <text class="nav-title-text">我的</text>
-        <view class="nav-back" style="opacity: 0;"></view>
+        <view class="nav-back" style="opacity: 0"></view>
       </view>
     </view>
 
-    <scroll-view scroll-y class="page-scroll" :style="{ paddingTop: (safeAreaTop + 56) + 'px' }">
+    <scroll-view scroll-y class="page-scroll" :style="{ paddingTop: safeAreaTop + 56 + 'px' }">
       <!-- 用户头像区 -->
       <view class="profile-section">
         <view class="avatar-wrap">
@@ -121,8 +121,8 @@
 
       <!-- 隐私设置 -->
       <view class="privacy-card">
-        <view class="card-title-row" style="margin-bottom: 12px;">
-          <view class="card-icon" style="background: #f0fdf4;">
+        <view class="card-title-row" style="margin-bottom: 12px">
+          <view class="card-icon" style="background: #f0fdf4">
             <yy-icon name="ri:shield-check-line" size="20" color="#16a34a" />
           </view>
           <text class="card-title">隐私保护</text>
@@ -133,11 +133,7 @@
             <text class="setting-label">隐藏真实手机号</text>
             <text class="setting-desc">他人扫码后仅能通过小程序联系，不显示真实号码</text>
           </view>
-          <switch
-            :checked="form.hidePhone"
-            color="#2563eb"
-            @change="form.hidePhone = $event.detail.value"
-          />
+          <switch :checked="form.hidePhone" color="#2563eb" @change="form.hidePhone = $event.detail.value" />
         </view>
 
         <view class="setting-item">
@@ -145,30 +141,22 @@
             <text class="setting-label">允许语音通话</text>
             <text class="setting-desc">允许他人在小程序内向您发起语音通话</text>
           </view>
-          <switch
-            :checked="form.allowVoiceCall"
-            color="#2563eb"
-            @change="form.allowVoiceCall = $event.detail.value"
-          />
+          <switch :checked="form.allowVoiceCall" color="#2563eb" @change="form.allowVoiceCall = $event.detail.value" />
         </view>
 
-        <view class="setting-item" style="border-bottom: none;">
+        <view class="setting-item" style="border-bottom: none">
           <view class="setting-info">
             <text class="setting-label">接收挪车通知</text>
             <text class="setting-desc">他人扫码或搜索您的车辆时推送通知</text>
           </view>
-          <switch
-            :checked="form.receiveNotify"
-            color="#2563eb"
-            @change="form.receiveNotify = $event.detail.value"
-          />
+          <switch :checked="form.receiveNotify" color="#2563eb" @change="form.receiveNotify = $event.detail.value" />
         </view>
       </view>
 
       <!-- 功能列表 -->
       <view class="menu-card">
         <view class="menu-item" @click="toQrcode">
-          <view class="menu-icon" style="background: #eff6ff;">
+          <view class="menu-icon" style="background: #eff6ff">
             <yy-icon name="ri:qr-code-line" size="20" color="#2563eb" />
           </view>
           <view class="menu-content">
@@ -179,7 +167,7 @@
         </view>
 
         <view class="menu-item" @click="toHistory">
-          <view class="menu-icon" style="background: #fff7ed;">
+          <view class="menu-icon" style="background: #fff7ed">
             <yy-icon name="ri:history-line" size="20" color="#ea580c" />
           </view>
           <view class="menu-content">
@@ -190,7 +178,7 @@
         </view>
 
         <view class="menu-item" @click="shareApp">
-          <view class="menu-icon" style="background: #f0fdf4;">
+          <view class="menu-icon" style="background: #f0fdf4">
             <yy-icon name="ri:share-forward-line" size="20" color="#16a34a" />
           </view>
           <view class="menu-content">
@@ -201,7 +189,7 @@
         </view>
 
         <view class="menu-item" @click="showAbout">
-          <view class="menu-icon" style="background: #faf5ff;">
+          <view class="menu-icon" style="background: #faf5ff">
             <yy-icon name="ri:information-line" size="20" color="#9333ea" />
           </view>
           <view class="menu-content">
@@ -212,80 +200,11 @@
         </view>
       </view>
 
-      <view style="height: 40px;"></view>
+      <view style="height: 40px"></view>
     </scroll-view>
 
-    <!-- 车牌输入键盘弹层 -->
-    <view v-if="keyboardVisible" class="keyboard-mask" @click="hidePlateKeyboard">
-      <view class="keyboard-popup" @click.stop>
-        <view class="keyboard-header">
-          <text class="keyboard-title">输入车牌号</text>
-          <text class="keyboard-done" @click="hidePlateKeyboard">完成</text>
-        </view>
-
-        <view class="plate-display-popup">
-          <template v-for="(char, idx) in plateChars" :key="idx">
-            <view v-if="idx === 2" class="plate-separator-dot"></view>
-            <view
-              class="plate-cell"
-              :class="{
-                'plate-cell-filled': char,
-                'plate-cell-active': idx === currentInputIndex,
-                'plate-cell-province': idx === 0,
-              }"
-            >
-              <text class="plate-cell-text">{{ char || '' }}</text>
-              <view v-if="!char && idx === currentInputIndex" class="plate-cursor"></view>
-            </view>
-          </template>
-        </view>
-
-        <view class="keyboard-content">
-          <view v-if="currentInputIndex === 0" class="keyboard-row province-row">
-            <view
-              v-for="p in provinces"
-              :key="p"
-              class="key-btn"
-              @click="typeChar(p)"
-            >
-              <text class="key-text">{{ p }}</text>
-            </view>
-          </view>
-
-          <template v-else>
-            <view class="keyboard-row">
-              <view v-for="k in keyboardRow1" :key="k" class="key-btn" @click="typeChar(k)">
-                <text class="key-text">{{ k }}</text>
-              </view>
-            </view>
-            <view class="keyboard-row">
-              <view v-for="k in keyboardRow2" :key="k" class="key-btn" @click="typeChar(k)">
-                <text class="key-text">{{ k }}</text>
-              </view>
-            </view>
-            <view class="keyboard-row">
-              <view
-                v-for="k in keyboardRow3"
-                :key="k"
-                class="key-btn"
-                :class="{ 'key-btn-disabled': k === 'I' || k === 'O' }"
-                @click="typeChar(k)"
-              >
-                <text class="key-text">{{ k }}</text>
-              </view>
-              <view class="key-btn key-btn-delete" @click="deleteChar">
-                <yy-icon name="ri:delete-back-2-line" size="18" color="#374151" />
-              </view>
-            </view>
-            <view class="keyboard-row">
-              <view v-for="k in keyboardNums" :key="k" class="key-btn" @click="typeChar(k)">
-                <text class="key-text">{{ k }}</text>
-              </view>
-            </view>
-          </template>
-        </view>
-      </view>
-    </view>
+    <!-- 车牌输入键盘组件 -->
+    <yy-plate-keyboard v-model:visible="keyboardVisible" v-model="form.plate" />
   </view>
 </template>
 
@@ -304,19 +223,9 @@
     receiveNotify: true,
   })
 
-  const provinces = ['京', '津', '沪', '渝', '冀', '豫', '云', '辽', '黑', '湘', '皖', '鲁', '新', '苏', '浙', '赣', '鄂', '桂', '甘', '晋', '蒙', '陕', '吉', '闽', '贵', '粤', '川', '青', '琼', '宁', '藏']
-  const keyboardRow1 = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'P']
-  const keyboardRow2 = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L']
-  const keyboardRow3 = ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
-  const keyboardNums = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
-
   const hasSaved = ref(false)
   const historyCount = ref(0)
   const savedCarsCount = computed(() => (form.value.plate ? 1 : 0))
-
-  const currentInputIndex = computed(() => {
-    return Math.min(form.value.plate.length, 7)
-  })
 
   const plateChars = computed(() => {
     const chars = form.value.plate.split('')
@@ -352,23 +261,6 @@
     keyboardVisible.value = true
   }
 
-  function hidePlateKeyboard() {
-    keyboardVisible.value = false
-  }
-
-  function typeChar(char) {
-    if (form.value.plate.length < 8) {
-      if (currentInputIndex.value > 0 && (char === 'I' || char === 'O')) return
-      form.value.plate += char
-    }
-  }
-
-  function deleteChar() {
-    if (form.value.plate.length > 0) {
-      form.value.plate = form.value.plate.slice(0, -1)
-    }
-  }
-
   function saveInfo() {
     if (!canSave.value) {
       if (form.value.plate.length < 7) {
@@ -392,11 +284,11 @@
       uni.showToast({ title: '请先保存车辆信息', icon: 'none' })
       return
     }
-    uni.navigateTo({ url: '/pages/qrcode/index' })
+    uni.navigateTo({ url: '/pages/my/qrcode' })
   }
 
   function toHistory() {
-    uni.navigateTo({ url: '/pages/history/index' })
+    uni.navigateTo({ url: '/pages/my/history' })
   }
 
   function shareApp() {
@@ -464,7 +356,9 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    &:active { background: rgba(255, 255, 255, 0.15); }
+    &:active {
+      background: rgba(255, 255, 255, 0.15);
+    }
   }
 
   .nav-title-text {
@@ -716,8 +610,14 @@
   }
 
   @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
+    0%,
+    50% {
+      opacity: 1;
+    }
+    51%,
+    100% {
+      opacity: 0;
+    }
   }
 
   /* 保存按钮 */
@@ -731,7 +631,10 @@
     justify-content: center;
     gap: 8px;
     box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
-    &:active { opacity: 0.9; transform: scale(0.99); }
+    &:active {
+      opacity: 0.9;
+      transform: scale(0.99);
+    }
 
     &.save-btn-disabled {
       background: #d1d5db;
@@ -797,8 +700,12 @@
     gap: 12px;
     padding: 16px 18px;
     border-bottom: 1px solid #f3f4f6;
-    &:last-child { border-bottom: none; }
-    &:active { background: #f9fafb; }
+    &:last-child {
+      border-bottom: none;
+    }
+    &:active {
+      background: #f9fafb;
+    }
   }
 
   .menu-icon {
@@ -826,109 +733,5 @@
     display: block;
     font-size: 12px;
     color: #9ca3af;
-  }
-
-  /* 键盘弹层 */
-  .keyboard-mask {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 1000;
-    display: flex;
-    align-items: flex-end;
-  }
-
-  .keyboard-popup {
-    width: 100%;
-    background: #ffffff;
-    border-radius: 24px 24px 0 0;
-    padding: 16px 12px 20px;
-    animation: slideUp 0.3s ease-out;
-  }
-
-  @keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-  }
-
-  .keyboard-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 8px 12px;
-    border-bottom: 1px solid #f3f4f6;
-  }
-
-  .keyboard-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: #111827;
-  }
-
-  .keyboard-done {
-    font-size: 14px;
-    color: #2563eb;
-    font-weight: 500;
-    padding: 6px 12px;
-  }
-
-  .plate-display-popup {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 16px 0;
-    justify-content: center;
-  }
-
-  .keyboard-content {
-    padding: 8px 0 4px;
-  }
-
-  .keyboard-row {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    margin-bottom: 6px;
-    flex-wrap: wrap;
-  }
-
-  .province-row {
-    gap: 4px;
-  }
-
-  .key-btn {
-    min-width: 32px;
-    height: 40px;
-    background: #f1f5f9;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    max-width: 42px;
-
-    &:active {
-      background: #e2e8f0;
-      transform: scale(0.95);
-    }
-
-    &.key-btn-delete {
-      background: #fee2e2;
-      max-width: 50px;
-      min-width: 50px;
-    }
-
-    &.key-btn-disabled {
-      opacity: 0.3;
-    }
-  }
-
-  .key-text {
-    font-size: 15px;
-    font-weight: 600;
-    color: #1f2937;
   }
 </style>

@@ -146,7 +146,7 @@
             uni.makePhoneCall({ phoneNumber: record.phone, fail: () => {} })
           } else {
             uni.navigateTo({
-              url: `/pages/contact/index?plate=${encodeURIComponent(record.plate)}&type=call`,
+              url: `/pages/index/contact?plate=${encodeURIComponent(record.plate)}&type=call`,
             })
           }
         },
