@@ -228,7 +228,7 @@
   function contactOwner(type) {
     const plate = plateValue.value.trim()
     if (plate.length < 7) {
-      uni.showToast({ title: '请输入完整车牌号', icon: 'none' })
+      vk.toast('请输入完整车牌号')
       return
     }
 
@@ -236,9 +236,7 @@
     saveHistory(plate)
 
     // 跳转到联系页
-    uni.navigateTo({
-      url: `/pages/index/contact?plate=${encodeURIComponent(plate)}&type=${type}`,
-    })
+    vk.navigateTo(`/pages/index/contact?plate=${encodeURIComponent(plate)}&type=${type}`)
   }
 
   function scanQRCode() {
@@ -249,32 +247,30 @@
         try {
           const data = JSON.parse(res.result)
           if (data.plate && data.phone) {
-            uni.navigateTo({
-              url: `/pages/index/contact?plate=${encodeURIComponent(data.plate)}&phone=${encodeURIComponent(data.phone)}&note=${encodeURIComponent(data.note || '')}&type=scan`,
-            })
+            vk.navigateTo(`/pages/index/contact?plate=${encodeURIComponent(data.plate)}&phone=${encodeURIComponent(data.phone)}&note=${encodeURIComponent(data.note || '')}&type=scan`)
           } else {
-            uni.showToast({ title: '无效的挪车码', icon: 'none' })
+            vk.toast('无效的挪车码')
           }
         } catch {
-          uni.showToast({ title: '无效的二维码格式', icon: 'none' })
+          vk.toast('无效的二维码格式')
         }
       },
       fail: () => {
-        uni.showToast({ title: '扫码取消', icon: 'none' })
+        vk.toast('扫码取消')
       },
     })
   }
 
   function toMy() {
-    uni.navigateTo({ url: '/pages/my/index' })
+    vk.navigateTo('/pages/my/index')
   }
 
   function toQrcode() {
-    uni.navigateTo({ url: '/pages/my/qrcode' })
+    vk.navigateTo('/pages/my/qrcode')
   }
 
   function toHistory() {
-    uni.navigateTo({ url: '/pages/my/history' })
+    vk.navigateTo('/pages/my/history')
   }
 </script>
 
@@ -444,14 +440,6 @@
     }
   }
 
-  .hidden-input {
-    position: absolute;
-    opacity: 0;
-    height: 1px;
-    width: 1px;
-    z-index: -1;
-  }
-
   /* 历史搜索 */
   .history-section {
     margin-top: 12px;
@@ -497,105 +485,6 @@
   .history-tag-text {
     font-size: 12px;
     color: #374151;
-  }
-
-  /* 虚拟键盘 */
-  .keyboard-section {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #f3f4f6;
-  }
-
-  .keyboard-row {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    margin-bottom: 6px;
-    flex-wrap: wrap;
-  }
-
-  .province-row {
-    gap: 4px;
-  }
-
-  .key-btn {
-    min-width: 38px;
-    height: 42px;
-    background: #f1f5f9;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    max-width: 46px;
-
-    &:active {
-      background: #e2e8f0;
-      transform: scale(0.95);
-    }
-
-    &.key-btn-num {
-      max-width: 36px;
-    }
-
-    &.key-btn-delete {
-      background: #fee2e2;
-      max-width: 50px;
-      min-width: 50px;
-    }
-
-    &.key-btn-disabled {
-      opacity: 0.3;
-    }
-  }
-
-  .key-text {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1f2937;
-  }
-
-  .keyboard-footer {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .key-clear-btn {
-    flex: 1;
-    height: 44px;
-    background: #f3f4f6;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    &:active {
-      opacity: 0.7;
-    }
-  }
-
-  .key-clear-text {
-    font-size: 14px;
-    color: #6b7280;
-  }
-
-  .key-confirm-btn {
-    flex: 2;
-    height: 44px;
-    background: #2563eb;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    &:active {
-      opacity: 0.85;
-    }
-  }
-
-  .key-confirm-text {
-    font-size: 14px;
-    font-weight: 600;
-    color: #ffffff;
   }
 
   /* 联系操作区 */
@@ -807,5 +696,7 @@
     color: #6b7280;
     line-height: 1.5;
     flex: 1;
+  }
+</style>
   }
 </style>

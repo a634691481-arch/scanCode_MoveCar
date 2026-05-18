@@ -1,20 +1,6 @@
 <template>
-  <view class="page-container">
-    <!-- 顶部背景 -->
-    <view class="header-bg"></view>
-
-    <!-- 自定义导航栏 -->
-    <view class="nav-bar" :style="{ paddingTop: safeAreaTop + 'px' }">
-      <view class="nav-content">
-        <view class="nav-back" @click="goBack">
-          <yy-icon name="ri:arrow-left-s-line" size="24" color="#ffffff" />
-        </view>
-        <text class="nav-title-text">联系车主</text>
-        <view class="nav-back" style="opacity: 0;"></view>
-      </view>
-    </view>
-
-    <scroll-view scroll-y class="page-scroll" :style="{ paddingTop: (safeAreaTop + 56) + 'px' }">
+  <yy-paging v-model="state.dataList" @query="queryList" ref="paging" @scroll="scroll" v-bind="pagingConfig">
+    <view class="page-content">
       <!-- 车牌展示 -->
       <view class="plate-show-section">
         <view class="plate-show-card">
@@ -136,13 +122,33 @@
         </view>
       </view>
 
-      <view style="height: 40px;"></view>
-    </scroll-view>
-  </view>
+      <view style="height: 40rpx;"></view>
+    </view>
+  </yy-paging>
 </template>
 
 <script setup>
-  const safeAreaTop = ref(0)
+  // ====== yy-paging 配置 ======
+  const pagingConfig = ref({
+    auto: false,
+    refresherEnabled: false,
+    showRefresherWhenReload: false,
+    loadingMoreEnabled: false,
+    showTabbar: false,
+    hideNav: false,
+    showNavBack: true,
+    navTitle: '联系车主',
+    color: uni.$u.color.primary,
+  })
+
+  const state = ref({
+    isScroll: false,
+    dataList: [],
+  })
+
+  const paging = ref()
+
+  // ====== 业务状态 ======
   const plate = ref('')
   const searching = ref(true)
   const found = ref(false)
@@ -173,9 +179,6 @@
   })
 
   onLoad(options => {
-    const sysInfo = uni.getSystemInfoSync()
-    safeAreaTop.value = sysInfo.statusBarHeight || 0
-
     plate.value = decodeURIComponent(options.plate || '')
 
     // 来自扫码的直接传递信息
@@ -196,12 +199,10 @@
     // 模拟查询车主信息（实际应调用后端 API）
     setTimeout(() => {
       const myInfo = uni.getStorageSync('my_car_info')
-      // 演示场景：如果输入的车牌就是自己设置的车牌，则返回自己的信息
       if (myInfo && myInfo.plate === plate.value) {
         ownerInfo.value = { ...myInfo }
         found.value = true
       } else {
-        // 演示模式：模拟有车主信息（实际项目应改为后端查询失败 found = false）
         ownerInfo.value = {
           plate: plate.value,
           phone: '13800138000',
@@ -217,6 +218,15 @@
     }, 800)
   })
 
+  function scroll(e) {
+    state.value.isScroll = e.detail.scrollTop > 0
+  }
+
+  async function queryList(page, limit) {
+    await new Promise(resolve => setTimeout(resolve, 50))
+    paging.value?.complete([])
+  }
+
   function saveContactRecord() {
     const records = uni.getStorageSync('move_car_history') || []
     records.unshift({
@@ -230,7 +240,7 @@
 
   function callPhone() {
     if (!ownerInfo.value.phone) {
-      uni.showToast({ title: '电话号码不可用', icon: 'none' })
+      vk.toast('电话号码不可用')
       return
     }
     uni.makePhoneCall({
@@ -254,17 +264,8 @@
     uni.setClipboardData({
       data: tpl,
       success: () => {
-        uni.showModal({
-          title: '短信模板已复制',
-          content: '由于小程序限制，无法直接发送短信。模板已复制到剪贴板，您可以粘贴到短信中发送。',
-          confirmText: '去发短信',
-          cancelText: '取消',
-          confirmColor: '#2563eb',
-          success: res => {
-            if (res.confirm) {
-              uni.makePhoneCall({ phoneNumber: ownerInfo.value.phone })
-            }
-          },
+        vk.alert('由于小程序限制，无法直接发送短信。模板已复制到剪贴板，您可以粘贴到短信中发送。', '短信模板已复制', '去发短信', () => {
+          uni.makePhoneCall({ phoneNumber: ownerInfo.value.phone })
         })
       },
     })
@@ -281,72 +282,24 @@
   }
 
   function goBack() {
-    uni.navigateBack({ fail: () => uni.reLaunch({ url: '/pages/index/index' }) })
+    uni.navigateBack({ fail: () => vk.navigateTo('/pages/index/index') })
   }
 </script>
 
 <style lang="scss" scoped>
-  .page-container {
+  .page-content {
     min-height: 100vh;
     background: #f5f7fb;
-    position: relative;
-  }
-
-  .header-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 200rpx;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #3b82f6 100%);
-    z-index: 0;
-  }
-
-  .nav-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-  }
-
-  .nav-content {
-    height: 56px;
-    padding: 0 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .nav-back {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    &:active { background: rgba(255, 255, 255, 0.15); }
-  }
-
-  .nav-title-text {
-    font-size: 17px;
-    font-weight: 600;
-    color: #ffffff;
-  }
-
-  .page-scroll {
-    height: 100vh;
-    box-sizing: border-box;
+    padding-bottom: 24rpx;
   }
 
   /* 车牌展示 */
   .plate-show-section {
-    position: relative;
-    z-index: 10;
-    padding: 8px 16px 20px;
+    padding: 20px 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #3b82f6 100%);
   }
 
   .plate-show-card {
@@ -412,13 +365,11 @@
 
   /* 状态卡片 */
   .status-card {
-    margin: 0 16px;
+    margin: 16px 16px 0;
     background: #ffffff;
     border-radius: 20px;
     padding: 24px 18px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-    position: relative;
-    z-index: 10;
   }
 
   .status-loading {

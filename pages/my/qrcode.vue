@@ -1,20 +1,6 @@
 <template>
-  <view class="page-container">
-    <!-- 顶部背景 -->
-    <view class="header-bg"></view>
-
-    <!-- 自定义导航栏 -->
-    <view class="nav-bar" :style="{ paddingTop: safeAreaTop + 'px' }">
-      <view class="nav-content">
-        <view class="nav-back" @click="goBack">
-          <yy-icon name="ri:arrow-left-s-line" size="24" color="#ffffff" />
-        </view>
-        <text class="nav-title-text">我的挪车码</text>
-        <view class="nav-back" style="opacity: 0;"></view>
-      </view>
-    </view>
-
-    <scroll-view scroll-y class="page-scroll" :style="{ paddingTop: (safeAreaTop + 56) + 'px' }">
+  <yy-paging v-model="state.dataList" @query="queryList" ref="paging" @scroll="scroll" v-bind="pagingConfig">
+    <view class="page-content">
       <!-- 二维码展示卡 -->
       <view class="qr-card" v-if="hasInfo">
         <!-- 车牌信息头部 -->
@@ -113,13 +99,33 @@
         </view>
       </view>
 
-      <view style="height: 40px;"></view>
-    </scroll-view>
-  </view>
+      <view style="height: 40rpx;"></view>
+    </view>
+  </yy-paging>
 </template>
 
 <script setup>
-  const safeAreaTop = ref(0)
+  // ====== yy-paging 配置 ======
+  const pagingConfig = ref({
+    auto: false,
+    refresherEnabled: false,
+    showRefresherWhenReload: false,
+    loadingMoreEnabled: false,
+    showTabbar: false,
+    hideNav: false,
+    showNavBack: true,
+    navTitle: '我的挪车码',
+    color: uni.$u.color.primary,
+  })
+
+  const state = ref({
+    isScroll: false,
+    dataList: [],
+  })
+
+  const paging = ref()
+
+  // ====== 业务状态 ======
   const carInfo = ref({
     plate: '',
     phone: '',
@@ -135,9 +141,6 @@
   })
 
   onLoad(() => {
-    const sysInfo = uni.getSystemInfoSync()
-    safeAreaTop.value = sysInfo.statusBarHeight || 0
-
     const saved = uni.getStorageSync('my_car_info')
     if (saved && saved.plate && saved.phone) {
       carInfo.value = saved
@@ -150,6 +153,15 @@
     }
   })
 
+  function scroll(e) {
+    state.value.isScroll = e.detail.scrollTop > 0
+  }
+
+  async function queryList(page, limit) {
+    await new Promise(resolve => setTimeout(resolve, 50))
+    paging.value?.complete([])
+  }
+
   function drawQRCode() {
     const qrData = JSON.stringify({
       plate: carInfo.value.plate,
@@ -158,28 +170,22 @@
       t: Date.now(),
     })
 
-    // 简易二维码生成（使用 canvas 画一个占位的二维码样式）
-    // 实际项目建议引入 weapp-qrcode 或 uQRCode 库
     const ctx = uni.createCanvasContext('qrCanvas')
     const size = 200
     const cellSize = size / 25
 
-    // 画背景
     ctx.setFillStyle('#ffffff')
     ctx.fillRect(0, 0, size, size)
 
-    // 用简单的hash模式模拟二维码外观
     const dataStr = qrData
     ctx.setFillStyle('#1f2937')
 
     for (let row = 0; row < 25; row++) {
       for (let col = 0; col < 25; col++) {
-        // 定位标记（左上、右上、左下）
         if (isPositionMarker(row, col, 25)) {
           ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize)
           continue
         }
-        // 数据区域：使用字符串hash模拟
         const idx = row * 25 + col
         const charCode = dataStr.charCodeAt(idx % dataStr.length)
         if ((charCode + idx) % 3 !== 0) {
@@ -192,20 +198,17 @@
   }
 
   function isPositionMarker(row, col, size) {
-    // 左上 7x7
     if (row < 7 && col < 7) {
       if (row === 0 || row === 6 || col === 0 || col === 6) return true
       if (row >= 2 && row <= 4 && col >= 2 && col <= 4) return true
       return false
     }
-    // 右上 7x7
     if (row < 7 && col >= size - 7) {
       const c = col - (size - 7)
       if (row === 0 || row === 6 || c === 0 || c === 6) return true
       if (row >= 2 && row <= 4 && c >= 2 && c <= 4) return true
       return false
     }
-    // 左下 7x7
     if (row >= size - 7 && col < 7) {
       const r = row - (size - 7)
       if (r === 0 || r === 6 || col === 0 || col === 6) return true
@@ -222,95 +225,42 @@
         uni.saveImageToPhotosAlbum({
           filePath: res.tempFilePath,
           success: () => {
-            uni.showToast({ title: '已保存到相册', icon: 'success' })
+            vk.toast('已保存到相册', 'success')
           },
           fail: () => {
-            uni.showToast({ title: '保存失败，请检查权限', icon: 'none' })
+            vk.toast('保存失败，请检查权限')
           },
         })
       },
       fail: () => {
-        uni.showToast({ title: '生成图片失败', icon: 'none' })
+        vk.toast('生成图片失败')
       },
     })
   }
 
   function shareQR() {
-    uni.showToast({ title: '请使用右上角分享', icon: 'none' })
+    vk.toast('请使用右上角分享')
   }
 
   function toMy() {
-    uni.navigateTo({ url: '/pages/my/index' })
-  }
-
-  function goBack() {
-    uni.navigateBack({ fail: () => uni.reLaunch({ url: '/pages/index/index' }) })
+    vk.navigateTo('/pages/my/index')
   }
 </script>
 
 <style lang="scss" scoped>
-  .page-container {
+  .page-content {
     min-height: 100vh;
     background: #f5f7fb;
-    position: relative;
-  }
-
-  .header-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 200rpx;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #3b82f6 100%);
-    z-index: 0;
-  }
-
-  .nav-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-  }
-
-  .nav-content {
-    height: 56px;
-    padding: 0 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .nav-back {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    &:active { background: rgba(255, 255, 255, 0.15); }
-  }
-
-  .nav-title-text {
-    font-size: 17px;
-    font-weight: 600;
-    color: #ffffff;
-  }
-
-  .page-scroll {
-    height: 100vh;
-    box-sizing: border-box;
+    padding: 12px 0 24rpx;
   }
 
   /* 二维码卡片 */
   .qr-card {
-    margin: 12px 16px 0;
+    margin: 0 16px;
     background: #ffffff;
     border-radius: 24px;
     padding: 24px 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-    position: relative;
-    z-index: 10;
   }
 
   .qr-card-header {

@@ -1,23 +1,22 @@
 <template>
-  <view class="page-container">
-    <!-- 顶部背景 -->
-    <view class="header-bg"></view>
-
-    <!-- 自定义导航栏 -->
-    <view class="nav-bar" :style="{ paddingTop: safeAreaTop + 'px' }">
-      <view class="nav-content">
-        <view class="nav-back" @click="goBack">
-          <yy-icon name="ri:arrow-left-s-line" size="24" color="#ffffff" />
-        </view>
-        <text class="nav-title-text">挪车记录</text>
-        <view class="nav-back" @click="clearRecords" v-if="records.length > 0">
-          <yy-icon name="ri:delete-bin-line" size="20" color="#ffffff" />
-        </view>
-        <view class="nav-back" style="opacity: 0;" v-else></view>
+  <yy-paging
+    v-model="state.dataList"
+    @query="queryList"
+    ref="paging"
+    @scroll="scroll"
+    v-bind="pagingConfig"
+  >
+    <!-- 自定义导航栏右侧清除按钮 -->
+    <template #right>
+      <view class="nav-right" @click="clearRecords" v-if="records.length > 0">
+        <yy-icon name="ri:delete-bin-line" size="20" color="#ffffff" />
       </view>
-    </view>
+    </template>
 
-    <scroll-view scroll-y class="page-scroll" :style="{ paddingTop: (safeAreaTop + 56) + 'px' }">
+    <view class="page-content">
+      <!-- 顶部渐变背景 -->
+      <view class="header-gradient"></view>
+
       <!-- 统计头部 -->
       <view class="stat-section" v-if="records.length > 0">
         <view class="stat-card">
@@ -42,7 +41,10 @@
           :key="idx"
           @click="onRecordTap(record)"
         >
-          <view class="record-icon" :class="record.type === 'received' ? 'record-icon-received' : 'record-icon-sent'">
+          <view
+            class="record-icon"
+            :class="record.type === 'received' ? 'record-icon-received' : 'record-icon-sent'"
+          >
             <yy-icon
               :name="record.type === 'received' ? 'ri:phone-incoming-line' : 'ri:phone-outgoing-line'"
               size="20"
@@ -56,7 +58,10 @@
               <text class="record-time">{{ formatTime(record.time) }}</text>
             </view>
             <view class="record-bottom">
-              <text class="record-type-tag" :class="record.type === 'received' ? 'tag-received' : 'tag-sent'">
+              <text
+                class="record-type-tag"
+                :class="record.type === 'received' ? 'tag-received' : 'tag-sent'"
+              >
                 {{ record.type === 'received' ? '收到挪车请求' : '发起挪车请求' }}
               </text>
               <text class="record-phone" v-if="record.phone">{{ maskPhone(record.phone) }}</text>
@@ -80,12 +85,23 @@
       </view>
 
       <view style="height: 40px;"></view>
-    </scroll-view>
-  </view>
+    </view>
+  </yy-paging>
 </template>
 
 <script setup>
-  const safeAreaTop = ref(0)
+  const pagingConfig = ref({
+    auto: false,
+    refresherEnabled: true,
+    showRefresherWhenReload: true,
+    showTabbar: false,
+    hideNav: false,
+    showNavBack: true,
+    navTitle: '挪车记录',
+    color: uni.$u.color.primary,
+  })
+  const state = ref({ isScroll: false, dataList: [] })
+  const paging = ref()
   const records = ref([])
 
   const todayCount = computed(() => {
@@ -99,14 +115,18 @@
     return records.value.filter(r => r.time >= weekAgo).length
   })
 
-  onLoad(() => {
-    const sysInfo = uni.getSystemInfoSync()
-    safeAreaTop.value = sysInfo.statusBarHeight || 0
-  })
-
   onShow(() => {
     loadRecords()
   })
+
+  function scroll(e) {
+    state.value.isScroll = e.detail.scrollTop > 0
+  }
+
+  async function queryList(page, limit) {
+    loadRecords()
+    paging.value?.complete([])
+  }
 
   function loadRecords() {
     const history = uni.getStorageSync('move_car_history') || []
@@ -145,9 +165,7 @@
           if (res.tapIndex === 0) {
             uni.makePhoneCall({ phoneNumber: record.phone, fail: () => {} })
           } else {
-            uni.navigateTo({
-              url: `/pages/index/contact?plate=${encodeURIComponent(record.plate)}&type=call`,
-            })
+            vk.navigateTo(`/pages/index/contact?plate=${encodeURIComponent(record.plate)}&type=call`)
           }
         },
       })
@@ -155,82 +173,43 @@
   }
 
   function clearRecords() {
-    uni.showModal({
-      title: '清除记录',
-      content: '确定要清除所有挪车记录吗？',
-      confirmText: '清除',
-      confirmColor: '#ef4444',
-      success: res => {
-        if (res.confirm) {
-          uni.setStorageSync('move_car_history', [])
-          records.value = []
-          uni.showToast({ title: '已清除', icon: 'success' })
-        }
-      },
+    vk.alert('确定要清除所有挪车记录吗？', '清除记录', '清除', () => {
+      uni.setStorageSync('move_car_history', [])
+      records.value = []
+      vk.toast('已清除', 'success')
     })
   }
 
   function goHome() {
-    uni.navigateBack({ fail: () => uni.reLaunch({ url: '/pages/index/index' }) })
-  }
-
-  function goBack() {
-    uni.navigateBack({ fail: () => uni.reLaunch({ url: '/pages/index/index' }) })
+    uni.navigateBack({ fail: () => vk.navigateTo('/pages/index/index') })
   }
 </script>
 
 <style lang="scss" scoped>
-  .page-container {
-    min-height: 100vh;
-    background: #f5f7fb;
+  .page-content {
     position: relative;
+    min-height: 100%;
   }
 
-  .header-bg {
-    position: fixed;
+  .header-gradient {
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 200rpx;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #3b82f6 100%);
     z-index: 0;
   }
 
-  .nav-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-  }
-
-  .nav-content {
-    height: 56px;
-    padding: 0 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .nav-back {
+  .nav-right {
     width: 40px;
     height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    &:active { background: rgba(255, 255, 255, 0.15); }
-  }
-
-  .nav-title-text {
-    font-size: 17px;
-    font-weight: 600;
-    color: #ffffff;
-  }
-
-  .page-scroll {
-    height: 100vh;
-    box-sizing: border-box;
+    &:active {
+      background: rgba(255, 255, 255, 0.15);
+    }
   }
 
   /* 统计卡片 */
@@ -244,7 +223,7 @@
 
   .stat-card {
     flex: 1;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 16px;
     padding: 16px 12px;
     display: flex;
@@ -272,6 +251,8 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    position: relative;
+    z-index: 10;
   }
 
   .record-card {
@@ -282,7 +263,9 @@
     background: #ffffff;
     border-radius: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    &:active { background: #f9fafb; }
+    &:active {
+      background: #f9fafb;
+    }
   }
 
   .record-icon {
@@ -361,6 +344,8 @@
     flex-direction: column;
     align-items: center;
     padding: 80px 32px 0;
+    position: relative;
+    z-index: 10;
   }
 
   .empty-illustration {
@@ -397,7 +382,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    &:active { opacity: 0.9; }
+    &:active {
+      opacity: 0.9;
+    }
   }
 
   .empty-btn-text {

@@ -277,11 +277,11 @@
   function saveInfo() {
     if (!canSave.value) {
       if (form.value.plate.length < 7) {
-        uni.showToast({ title: '请输入完整车牌号', icon: 'none' })
+        vk.toast('请输入完整车牌号')
         return
       }
       if (!/^1[3-9]\d{9}$/.test(form.value.phone)) {
-        uni.showToast({ title: '请输入正确的手机号', icon: 'none' })
+        vk.toast('请输入正确的手机号')
         return
       }
     }
@@ -289,33 +289,27 @@
     uni.setStorageSync('my_car_info', form.value)
     hasSaved.value = true
 
-    uni.showToast({ title: '保存成功', icon: 'success' })
+    vk.toast('保存成功', 'success')
   }
 
   function toQrcode() {
     if (!hasSaved.value) {
-      uni.showToast({ title: '请先保存车辆信息', icon: 'none' })
+      vk.toast('请先保存车辆信息')
       return
     }
-    uni.navigateTo({ url: '/pages/my/qrcode' })
+    vk.navigateTo('/pages/my/qrcode')
   }
 
   function toHistory() {
-    uni.navigateTo({ url: '/pages/my/history' })
+    vk.navigateTo('/pages/my/history')
   }
 
   function shareApp() {
-    uni.showToast({ title: '请点击右上角分享', icon: 'none' })
+    vk.toast('请点击右上角分享')
   }
 
   function showAbout() {
-    uni.showModal({
-      title: '关于挪车助手',
-      content: '一款便捷的挪车工具，帮助您快速联系车主或被联系，让出行更高效。\n\n版本：v1.0.0',
-      showCancel: false,
-      confirmText: '我知道了',
-      confirmColor: '#2563eb',
-    })
+    vk.alert('一款便捷的挪车工具，帮助您快速联系车主或被联系，让出行更高效。\n\n版本：v1.0.0', '关于挪车助手', '我知道了')
   }
 </script>
 
