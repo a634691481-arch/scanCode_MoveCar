@@ -582,7 +582,7 @@
   .btn-msg-text {
     font-size: 15px;
     font-weight: 600;
-    color: #2563eb;
+    color: var(--u-type-primary);
   }
 
   /* 扫码入口 */

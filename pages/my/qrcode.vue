@@ -452,7 +452,6 @@
   .empty-btn {
     height: 44px;
     padding: 0 32px;
-    background: #2563eb;
     border-radius: 12px;
     display: flex;
     align-items: center;

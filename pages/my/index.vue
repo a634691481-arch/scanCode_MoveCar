@@ -142,7 +142,7 @@
       <!-- 功能列表 -->
       <view class="menu-card">
         <view class="menu-item" @click="toQrcode">
-          <view class="menu-icon" style="background: #eff6ff">
+          <view class="menu-icon" style="background: var(--u-type-primary-light)">
             <yy-icon name="ri:qr-code-line" size="20" :color="uni.$u.color.primary" />
           </view>
           <view class="menu-content">
@@ -539,7 +539,7 @@
   .plate-separator-dot {
     width: 7px;
     height: 7px;
-    background: #2563eb;
+    background: var(--u-type-primary);
     border-radius: 50%;
     flex-shrink: 0;
     margin: 0 2px;
