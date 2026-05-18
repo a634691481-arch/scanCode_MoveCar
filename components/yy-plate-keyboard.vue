@@ -186,7 +186,7 @@
 
   .keyboard-done {
     font-size: 14px;
-    color: #2563eb;
+    color: var(--u-type-primary);
     font-weight: 500;
     padding: 6px 12px;
   }
@@ -211,17 +211,17 @@
     position: relative;
 
     &.plate-cell-active {
-      border-color: #2563eb;
-      background: #eff6ff;
+      border-color: var(--u-type-primary);
+      background: var(--u-type-primary-light);
     }
 
     &.plate-cell-filled {
-      border-color: #2563eb;
+      border-color: var(--u-type-primary);
     }
 
     &.plate-cell-province {
-      background: #2563eb;
-      border-color: #2563eb;
+      background: var(--u-type-primary);
+      border-color: var(--u-type-primary);
 
       .plate-cell-text {
         color: #ffffff;
@@ -233,7 +233,7 @@
   .plate-separator-dot {
     width: 7px;
     height: 7px;
-    background: #2563eb;
+    background: var(--u-type-primary);
     border-radius: 50%;
     flex-shrink: 0;
     margin: 0 2px;
@@ -249,7 +249,7 @@
     position: absolute;
     width: 2px;
     height: 22px;
-    background: #2563eb;
+    background: var(--u-type-primary);
     border-radius: 1px;
     animation: blink 1s infinite;
   }

@@ -66,14 +66,6 @@
 				"enablePullDownRefresh": false,
 				"navigationBarTitleText": "我的挪车码"
 			}
-		},
-		{
-			"path": "pages/my/history",
-			"style": {
-				"disableScroll": true,
-				"enablePullDownRefresh": false,
-				"navigationBarTitleText": "挪车记录"
-			}
 		}
 	],
 	"globalStyle": {

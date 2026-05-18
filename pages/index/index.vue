@@ -67,10 +67,6 @@
               <yy-icon name="ri:phone-line" size="20" color="#ffffff" />
               <text class="btn-text">电话联系</text>
             </view>
-            <view class="btn-msg" :style="btnMsgStyle" @click="contactOwner('sms')">
-              <yy-icon name="ri:message-3-line" size="20" :color="uni.$u.color.primary" />
-              <text class="btn-msg-text">发送短信</text>
-            </view>
           </view>
         </view>
 
@@ -102,13 +98,6 @@
           </view>
           <text class="feature-label">挪车码</text>
           <text class="feature-desc">生成专属二维码</text>
-        </view>
-        <view class="feature-card" @click="toHistory">
-          <view class="feature-icon" style="background: #fff7ed">
-            <yy-icon name="ri:history-line" size="28" color="#ea580c" />
-          </view>
-          <text class="feature-label">挪车记录</text>
-          <text class="feature-desc">联系历史</text>
         </view>
       </view>
 
@@ -213,8 +202,19 @@
   }
 
   function clearHistory() {
-    vk.setStorageSync('plate_search_history', [])
-    historyPlates.value = []
+    vk.confirm({
+      title: '清除历史记录',
+      content: '确定要清除所有历史搜索记录吗？',
+      confirmText: '确定',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          vk.setStorageSync('plate_search_history', [])
+          historyPlates.value = []
+          vk.toast('已清除')
+        }
+      },
+    })
   }
 
   function saveHistory(plate) {
@@ -267,10 +267,6 @@
 
   function toQrcode() {
     vk.navigateTo('/pages/my/qrcode')
-  }
-
-  function toHistory() {
-    vk.navigateTo('/pages/my/history')
   }
 
   // ====== 主题色动态样式 ======
@@ -481,11 +477,13 @@
   .history-title {
     font-size: 12px;
     color: #6b7280;
+    line-height: 1;
   }
 
   .history-clear {
     font-size: 12px;
     color: #9ca3af;
+    line-height: 1;
   }
 
   .history-tags {
@@ -501,6 +499,7 @@
     padding: 4px 10px;
     background: #f3f4f6;
     border-radius: 20px;
+    line-height: 1;
     &:active {
       opacity: 0.7;
     }
@@ -509,6 +508,7 @@
   .history-tag-text {
     font-size: 12px;
     color: #374151;
+    line-height: 1;
   }
 
   /* 联系操作区 */

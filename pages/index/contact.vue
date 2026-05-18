@@ -81,36 +81,7 @@
           <yy-icon name="ri:arrow-right-s-line" size="20" color="#ffffff" />
         </view>
 
-        <view class="action-btn action-btn-sms" @click="sendSMS">
-          <view class="action-icon-wrap" :style="{ background: uni.$u.color.primaryLight }">
-            <yy-icon name="ri:message-3-line" size="24" :color="uni.$u.color.primary" />
-          </view>
-          <view class="action-text-group">
-            <text class="action-title-dark">发送短信</text>
-            <text class="action-subtitle-dark">使用模板快速发送</text>
-          </view>
-          <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
-        </view>
 
-        <!-- 短信模板 -->
-        <view class="sms-templates" v-if="showTemplates">
-          <text class="templates-title">选择短信模板</text>
-          <view
-            v-for="(tpl, idx) in smsTemplates"
-            :key="idx"
-            class="template-item"
-            :class="{ 'template-item-active': selectedTemplate === idx }"
-            @click="selectTemplate(idx)"
-          >
-            <view class="template-radio">
-              <view v-if="selectedTemplate === idx" class="template-radio-inner"></view>
-            </view>
-            <text class="template-text">{{ tpl }}</text>
-          </view>
-          <view class="template-confirm-btn" @click="confirmSendSMS">
-            <text class="template-confirm-text">发送选中模板</text>
-          </view>
-        </view>
       </view>
 
       <!-- 文明提示 -->
@@ -152,8 +123,6 @@
   const plate = ref('')
   const searching = ref(true)
   const found = ref(false)
-  const showTemplates = ref(false)
-  const selectedTemplate = ref(0)
 
   const ownerInfo = ref({
     plate: '',
@@ -162,13 +131,6 @@
     note: '',
     hidePhone: false,
   })
-
-  const smsTemplates = ref([
-    '您好，您的车牌为 {plate} 的车辆挡住了我的车，麻烦您方便时挪一下，谢谢！',
-    '车主您好，我在 [位置] 需要出车，您的车有些挡路，麻烦尽快挪车，万分感谢！',
-    '您好，您的车 {plate} 占用了车位/通道，请尽快挪车，谢谢配合！',
-    '您好，请问您是 {plate} 车主吗？方便挪一下车吗？我等会儿，谢谢！',
-  ])
 
   const displayPhone = computed(() => {
     if (!ownerInfo.value.phone) return ''
@@ -204,7 +166,6 @@
         note: decodeURIComponent(options.note || ''),
         hidePhone: false,
       }
-      saveContactRecord()
       searching.value = false
       found.value = true
       return
@@ -227,7 +188,6 @@
         found.value = true
       }
 
-      saveContactRecord()
       searching.value = false
     }, 800)
   })
@@ -241,17 +201,6 @@
     paging.value?.complete([])
   }
 
-  function saveContactRecord() {
-    const records = vk.getStorageSync('move_car_history') || []
-    records.unshift({
-      plate: plate.value,
-      phone: ownerInfo.value.phone,
-      time: Date.now(),
-      type: 'sent',
-    })
-    vk.setStorageSync('move_car_history', records.slice(0, 100))
-  }
-
   function callPhone() {
     if (!ownerInfo.value.phone) {
       vk.toast('电话号码不可用')
@@ -261,34 +210,6 @@
       phoneNumber: ownerInfo.value.phone,
       fail: () => {},
     })
-  }
-
-  function sendSMS() {
-    showTemplates.value = !showTemplates.value
-  }
-
-  function selectTemplate(idx) {
-    selectedTemplate.value = idx
-  }
-
-  function confirmSendSMS() {
-    const tpl = smsTemplates.value[selectedTemplate.value].replace(/\{plate\}/g, plate.value)
-
-    // #ifdef MP-WEIXIN
-    uni.setClipboardData({
-      data: tpl,
-      success: () => {
-        vk.alert('由于小程序限制，无法直接发送短信。模板已复制到剪贴板，您可以粘贴到短信中发送。', '短信模板已复制', '去发短信', () => {
-          uni.makePhoneCall({ phoneNumber: ownerInfo.value.phone })
-        })
-      },
-    })
-    // #endif
-
-    // #ifdef APP-PLUS || H5
-    const url = `sms:${ownerInfo.value.phone}?body=${encodeURIComponent(tpl)}`
-    plus && plus.runtime ? plus.runtime.openURL(url) : window.location.href = url
-    // #endif
   }
 
   function useFallback() {

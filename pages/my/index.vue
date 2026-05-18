@@ -9,7 +9,7 @@
           </view>
         </view>
         <text class="profile-name">{{ form.ownerName || '车主用户' }}</text>
-        <text class="profile-stat">已设置 {{ savedCarsCount }} 辆车 · {{ historyCount }} 次挪车记录</text>
+        <text class="profile-stat">已设置 {{ savedCarsCount }} 辆车</text>
       </view>
 
       <!-- 车辆信息卡片 -->
@@ -89,7 +89,7 @@
           <textarea
             v-model="form.note"
             class="form-textarea"
-            placeholder="例如：请尽量发短信联系，开会中不便接电话"
+            placeholder="例如：开会中不便接电话，稍后会回电"
             placeholder-class="form-placeholder"
             maxlength="80"
             :show-confirm-bar="false"
@@ -124,10 +124,10 @@
             <text class="setting-label">隐藏真实手机号</text>
             <text class="setting-desc">他人扫码后仅能通过小程序联系，不显示真实号码</text>
           </view>
-          <switch
-            :checked="form.hidePhone"
-            :color="uni.$u.color.primary"
-            @change="form.hidePhone = $event.detail.value"
+          <u-switch
+            v-model="form.hidePhone"
+            :activeColor="uni.$u.color.primary"
+            size="34"
           />
         </view>
 
@@ -136,10 +136,10 @@
             <text class="setting-label">允许语音通话</text>
             <text class="setting-desc">允许他人在小程序内向您发起语音通话</text>
           </view>
-          <switch
-            :checked="form.allowVoiceCall"
-            :color="uni.$u.color.primary"
-            @change="form.allowVoiceCall = $event.detail.value"
+          <u-switch
+            v-model="form.allowVoiceCall"
+            :activeColor="uni.$u.color.primary"
+            size="34"
           />
         </view>
 
@@ -148,10 +148,10 @@
             <text class="setting-label">接收挪车通知</text>
             <text class="setting-desc">他人扫码或搜索您的车辆时推送通知</text>
           </view>
-          <switch
-            :checked="form.receiveNotify"
-            :color="uni.$u.color.primary"
-            @change="form.receiveNotify = $event.detail.value"
+          <u-switch
+            v-model="form.receiveNotify"
+            :activeColor="uni.$u.color.primary"
+            size="34"
           />
         </view>
       </view>
@@ -165,17 +165,6 @@
           <view class="menu-content">
             <text class="menu-label">我的挪车码</text>
             <text class="menu-desc">生成专属二维码贴在车窗</text>
-          </view>
-          <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
-        </view>
-
-        <view class="menu-item" @click="toHistory">
-          <view class="menu-icon" style="background: #fff7ed">
-            <yy-icon name="ri:history-line" size="20" color="#ea580c" />
-          </view>
-          <view class="menu-content">
-            <text class="menu-label">挪车记录</text>
-            <text class="menu-desc">查看历史联系记录</text>
           </view>
           <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
         </view>
@@ -262,7 +251,6 @@
   })
 
   const hasSaved = ref(false)
-  const historyCount = ref(0)
   const savedCarsCount = computed(() => (form.value.plate ? 1 : 0))
 
   const plateChars = computed(() => {
@@ -315,8 +303,6 @@
       form.value = { ...form.value, ...saved }
       hasSaved.value = true
     }
-    const history = vk.getStorageSync('move_car_history') || []
-    historyCount.value = history.length
   }
 
   function showPlateKeyboard() {
@@ -347,10 +333,6 @@
       return
     }
     vk.navigateTo('/pages/my/qrcode')
-  }
-
-  function toHistory() {
-    vk.navigateTo('/pages/my/history')
   }
 
   function shareApp() {
