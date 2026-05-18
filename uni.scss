@@ -1,0 +1,13 @@
+//  添加uview框架主题css
+
+@import '@/uni_modules/uview-pro/theme.scss';
+@import '@/common/css/uni.scss';
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}

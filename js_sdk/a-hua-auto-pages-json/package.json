@@ -1,0 +1,18 @@
+{
+    "id": "a-hua-auto-pages-json",
+    "name": "auto-pages-json",
+    "displayName": "auto-pages-json",
+    "version": "1.0.09",
+    "description": "根据文件系统自动生成 pages.json 配置；示例视频在使用示例项目的 static 文件夹里",
+    "keywords": [
+        "auto-pages",
+        "auto-import-pages",
+        "auto-pages-json"
+    ],
+    "dcloudext": {
+        "category": [
+            "JS SDK",
+            "通用 SDK"
+        ]
+    }
+}

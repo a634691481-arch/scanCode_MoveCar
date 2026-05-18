@@ -1,0 +1,28 @@
+{
+  "light": {
+    "bgColor": "#f5f7fb",
+    "bgColorBottom": "#f5f7fb",
+    "bgColorTop": "#2563eb",
+    "bgTxtStyle": "dark",
+    "navBgColor": "#2563eb",
+    "navTxtStyle": "white",
+    "tabBgColor": "#ffffff",
+    "tabBorderStyle": "white",
+    "tabFontColor": "#1f2937",
+    "tabSelectedColor": "#2563eb",
+    "navTitle": "挪车助手"
+  },
+  "dark": {
+    "bgColor": "#0f172a",
+    "bgColorBottom": "#0f172a",
+    "bgColorTop": "#2563eb",
+    "bgTxtStyle": "light",
+    "navBgColor": "#2563eb",
+    "navTxtStyle": "white",
+    "tabBgColor": "#0f172a",
+    "tabBorderStyle": "white",
+    "tabFontColor": "#f3f4f6",
+    "tabSelectedColor": "#60a5fa",
+    "navTitle": "挪车助手"
+  }
+}

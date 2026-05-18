@@ -1,0 +1,329 @@
+
+{
+  "Vue View Template": {
+    "prefix": "ew",
+    "body": [
+        "<view class=\"$1\">$2</view>"
+    ],
+    "description": "创建一个 view 标签模板"
+  },
+
+ 
+  "Paging List Template": {
+    "prefix": "qqq-----page",
+    "body": [
+      "<template>",
+      "  <view>",
+      "    <yy-paging",
+      "      v-model=\"state.dataList\"",
+      "      @query=\"queryList\"",
+      "      ref=\"paging\"",
+      "      :auto=\"false\"",
+      "      @scroll=\"scroll\"",
+      "      :refresher-enabled=\"true\"",
+      "    >",
+      "      <template #top>",
+      "        <u-navbar",
+      "          :background=\"{ backgroundColor: state.isScroll ? '#fff' : '#fff' }\"",
+      "          :title=\"state.title\"",
+      "          :border-bottom=\"false\"",
+      "          title-color=\"#000\"",
+      "          isBack",
+      "          backIconColor=\"#000\"",
+      "        >",
+      "        </u-navbar>",
+      "      </template>",
+      "      <template #empty>",
+      "        <yy-empty></yy-empty>",
+      "      </template>",
+      "      <template #loadingMoreNoMore>",
+      "        <yy-nomore></yy-nomore>",
+      "      </template>",
+      "      <template #bottom>",
+      "        <!-- <view class=\"h-[4.5rem]\"></view> -->",
+      "      </template>",
+      "      <view class=\"flex flex-col px-3\">",
+      "        $0",
+      "      </view>",
+      "    </yy-paging>",
+      "  </view>",
+      "</template>",
+      "",
+      "<script setup>",
+      "  const state = ref({",
+      "    isScroll: false,",
+      "    dataList: [],",
+      "    title: '${1:页面标题}'",
+      "  })",
+      "",
+      "  const paging = ref()",
+      "",
+      "  onLoad(options => {",
+      "    console.log('🚀 页面加载:', options)",
+      "  })",
+      "",
+      "  onShow(options => {",
+      "    console.log('🚀 页面加载:', options)",
+      "  })",
+      "",
+      "  const scroll = e => {",
+      "    state.value.isScroll = e.detail.scrollTop > 0",
+      "  }",
+      "",
+      "  const queryList = (page, limit) => {",
+      "    setTimeout(() => {",
+      "      paging.value?.complete([1])",
+      "    }, 1000)",
+      "  }",
+      "</script>",
+      "",
+      "<style lang=\"scss\" scoped></style>"
+    ],
+    "description": "创建完整的分页列表页面模板"
+  },
+
+  "Icon Text Template": {
+    "prefix": "qqq-----icon-text",
+    "body": [
+      "<view class=\"flex items-center gap-1\">",
+      "  <image src=\"${1:/static/icon.png}\" mode=\"aspectFill\" class=\"size-4\" />",
+      "  <view class=\"text-base text-orange-500\">${2:文本内容}</view>",
+      "</view>"
+    ],
+    "description": "创建一个带图标的文本模板"
+  },
+  
+  "Agreement Popup Template": {
+    "prefix": "qqq-----popup",
+    "body": [
+      "<u-popup closeable v-model=\"state.showAgreement\" mode=\"bottom\" border-radius=\"20\">",
+      "  <view class=\"flex flex-col gap-3 p-3 bg-[#f6f6f6]\">",
+      "    <view class=\"flex items-center justify-between\">",
+      "      <view class=\"text-base font-medium text-gray-800\">知情同意书</view>",
+      "    </view>",
+      "    <scroll-view scroll-y class=\"max-h-[50vh]\">",
+      "      <u-parse :html=\"state.agreement.advice_notes\"></u-parse>",
+      "    </scroll-view>",
+      "  </view>",
+      "</u-popup>"
+    ],
+    "description": "创建一个知情同意书弹窗模板"
+  },
+  "Radio Group Template": {
+    "prefix": "qqq-----radio",
+    "body": [
+      "<u-radio-group v-model=\"state.formData.gender\" class=\"flex gap-6\">",
+      "  <u-radio name=\"男\" active-color=\"#67D7E5\">男</u-radio>",
+      "  <u-radio name=\"女\" active-color=\"#67D7E5\">女</u-radio>",
+      "</u-radio-group>"
+    ],
+    "description": "创建一个单选组模板"
+  },
+ 
+  "Checkbox Group List Template": {
+    "prefix": "qqq-----checkbox",
+    "body": [
+      "<u-checkbox-group v-model=\"state.${1:selectedProducts}\"  @change=\"${2:onProductChange}\">",
+      "  <u-checkbox",
+      "    v-for=\"(product, index) in state.${3:productList}\"",
+      "    :key=\"index\"",
+      "    :name=\"product.${4:name}\"",
+      "    active-color=\"#67D7E5\"",
+      "  >",
+      "    <text class=\"text-sm font-medium text-gray-600\">{{ product.${4:name}  }}元</text>",
+      "  </u-checkbox>",
+      "</u-checkbox-group>"
+    ],
+    "description": "创建一个带 v-for 的复选组模板"
+  },
+  "Input Template": {
+    "prefix": "qqq-----input",
+    "body": [
+
+      "<u-input v-model=\"state.formData.${1:fieldName}\" type=\"${2|text,select,password,textarea,number|}\" placeholder=\"${4:请输入}\" border clearable auto-height input-align=\"left\" maxlength=\"${3:5}\" />"
+    ],
+    "description": "创建一个输入框模板"
+  },
+
+
+  "Image Template": { 
+    "prefix": "qqq-----image",
+    "body": [
+      "<u-image src=\"${1:https://picsum.photos/200/200}\" width=\"100%\" height=\"100%\" mode=\"aspectFill\" class=\"!size-full\" />"
+    ],
+    "description": "创建一个图片模板"
+  },
+  "Action Sheet Template": {
+    "prefix": "qqq-----action-sheet",
+    "body": [
+      "<u-action-sheet",
+      "  :list=\"[",
+      "    { text: '男' },",
+      "    { text: '女' },",
+      "    { text: '保密' }",
+      "  ]\"",
+      "  v-model=\"state.${1:showActionSheet}\"",
+      "  @click=\"${2:actionSheetCallback}\"",
+      "></u-action-sheet>"
+    ],
+    "description": "创建一个操作菜单模板"
+  },
+  "Search Template": {
+    "prefix": "qqq-----search",
+    "body": [
+      "<u-search",
+      "  placeholder=\"${1:搜索}\"",
+      "  v-model=\"state.${2:keyword}\"",
+      "  :show-action=\"${3:false}\"",
+      "  @change=\"${4:searchChange}\"",
+      "></u-search>"
+    ],
+    "description": "创建一个搜索框模板"
+  },
+  "Tabs Template": {
+    "prefix": "qqq-----tabs",
+    "body": [
+      "<u-tabs",
+      "  :list=\"state.${1:tabList}\"",
+      "  :is-scroll=\"${2:false}\"",
+      "  v-model=\"state.${3:current}\"",
+      "  @change=\"${4:changeTab}\"",
+      "  active-color=\"#67D7E5\"",
+      "  bg-color=\"transparent\"",
+      "></u-tabs>"
+    ],
+    "description": "创建一个标签页模板"
+  },
+  "Loading Template": {
+    "prefix": "qqq-----loading",
+    "body": [
+      "<u-loading",
+      "  mode=\"${1:circle}\"",
+      "  color=\"${2:#fff}\"",
+      "  :show=\"state.${3:showLoading}\"",
+      "></u-loading>"
+    ],
+    "description": "创建一个加载动画模板"
+  },
+  "Parse Template": {
+    "prefix": "qqq-----parse",
+    "body": [
+      "<u-parse",
+      "  :html=\"state.${1:htmlContent}\"",
+      "  lazy-load",
+      "  selectable",
+      "  show-with-animation",
+      "  use-cache",
+      "></u-parse>"
+    ],
+    "description": "创建一个富文本解析模板"
+  },
+  "Button Template": {
+    "prefix": "qqq-----button",
+    "body": [
+      "<u-button size=\"${1:default}\" shape=\"${2:circle}\" type=\"${5:primary}\" class=\"${6:w-full}\" @click=\"${7:handleClick}\">",
+      "  ${8:按钮文字}",
+      "</u-button>"
+    ],
+    "description": "创建一个按钮模板"
+  },
+  "ottom Button Bar Template": {
+    "prefix": "qqq-----bottom-button",
+    "body": [
+      "<view class=\"pb-env bg-white shadow-md\">",
+      "  <view class=\"grid grid-cols-1 gap-3 px-3 py-2 pb-0\">",
+      "    <u-button size=\"default\" shape=\"circle\" :plain=\"false\" :hair-line=\"false\" type=\"primary\" class=\"w-full\" @click=\"${1:handleClick}\">",
+      "      ${2:按钮文字}",
+      "    </u-button>",
+      "  </view>",
+      "</view>"
+    ],
+    "description": "创建一个底部固定按钮栏模板"
+  },
+  
+  "Alert Tips Template": {
+    "prefix": "qqq-----alert-tips",
+    "body": [
+      "<u-alert-tips :show-icon=\"true\" type=\"${1:warning}\" description=\"${2:仅展示当日的咨询预约情况}\" :close-able=\"false\" ></u-alert-tips>"
+    ],
+    "description": "创建一个警告提示模板"
+  },
+  "Tag Template": {
+    "prefix": "qqq-----tag",
+    "body": [
+      "<u-tag text=\"${1:标签文字}\" type=\"${2:primary}\" mode=\"${3|dark,light,plain|}\" class=\"!rounded-full\" size=\"${4|default,mini|}\" />"
+    ],
+    "description": "创建一个标签模板"
+  },
+ 
+  "Picker Template": {
+    "prefix": "qqq-----picker-region",
+    "body": [
+      "<u-picker v-model=\"state.${1:showPickerRegion}\" mode=\"${2:region}\" @confirm=\"${3:pickerConfirmRegion}\" ></u-picker>"
+    ],
+    "description": "创建一个选择器模板"
+  },
+  
+  "Picker Time Template": {
+    "prefix": "qqq-----picker-time",
+    "body": [
+      "<u-picker v-model=\"state.${1:showPickerTime}\" mode=\"${2:time}\" @confirm=\"${3:pickerConfirmTime}\" ></u-picker>"
+    ],
+    "description": "创建一个时间选择器模板"
+  },
+  "Select Template": {
+    "prefix": "qqq-----select",
+    "body": [
+      "<u-select",
+      "  v-model=\"state.${1:showSelect}\"",
+      "  :list=\"${2:state.selectList}\"",
+      "  mode=\"single-column\"",
+      "  label-name=\"label\"",
+      "  value-name=\"value\"",
+      "  child-name=\"children\"",
+      "  confirm-text=\"确定\"",
+      "  cancel-text=\"取消\"",
+      "  @confirm=\"${3:selectConfirm}\"",
+      "></u-select>"
+    ],
+    "description": "创建一个列选择器模板"
+  },
+  "Count To Template": {
+    "prefix": "qqq-----count-to",
+    "body": [
+      "<u-count-to :start-val=\"0\" :end-val=\"500\" :decimals=\"${1:0}\" :font-size=\"${2:32}\" ref=\"countTo\" bold></u-count-to>"
+    ],
+    "description": "创建一个计数动画模板"
+  },
+
+  "Snapdom Screenshot Template": {
+    "prefix": "qqq-----screenshot",
+    "body": [
+      "  const ${1:downloadScreenshot} = async () => {",
+      "    try {",
+      "      vk.showLoading('生成图片中...') ",
+      "",
+      "      const element = document.getElementById('${2:user-info-card}')",
+      "      if (!element) {",
+      "        throw new Error('未找到要截图的元素')",
+      "      }",
+      "",
+      "      const { snapdom } = await import('https://unpkg.com/@zumer/snapdom/dist/snapdom.mjs')",
+      "      const result = await snapdom(element, {",
+      "        download: true,",
+      "        filename: `${3:截图}_${Date.now()}.png`,",
+      "        backgroundColor: '#fff'",
+      "      })",
+      "",
+      "      await result.download()",
+      "      vk.toast('下载成功')",
+      "    } catch (error) {",
+      "      vk.toast(error || '截图失败,请重试')",
+      "    } finally {",
+      "      vk.hideLoading()",
+      "    }",
+      "  }"
+    ],
+    "description": "使用 snapdom 动态截图下载功能"
+  },
+}

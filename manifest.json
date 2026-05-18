@@ -1,0 +1,270 @@
+{
+    "name" : "挪车助手",
+    "appid" : "__UNI__CA8E78B",
+    "description" : "便捷的挪车助手工具，输入车牌号或扫码即可联系车主，设置自己的车辆信息生成专属挪车码，让挪车沟通更高效。",
+    "versionName" : "1.0.5",
+    "versionCode" : 5,
+    "transformPx" : false,
+    "app-plus" : {
+        "confusion" : {
+            "description" : "原生混淆",
+            "resources" : {
+                "common/js/secure.js" : {}
+            }
+        },
+        "screenOrientation" : [ "portrait-primary" ],
+        "usingComponents" : true,
+        "nvueCompiler" : "uni-app",
+        "compilerVersion" : 3,
+        "splashscreen" : {
+            "alwaysShowBeforeRender" : true,
+            "waiting" : true,
+            "autoclose" : true,
+            "delay" : 0
+        },
+        "safearea" : {
+            "bottom" : {
+                "offset" : "none"
+            }
+        },
+        "modules" : {
+            "Barcode" : {},
+            "Bluetooth" : {},
+            "Camera" : {},
+            "Contacts" : {},
+            "FaceID" : {},
+            "Fingerprint" : {},
+            "VideoPlayer" : {},
+            "OAuth" : {},
+            "Share" : {},
+            "Payment" : {},
+            "Maps" : {},
+            "Geolocation" : {}
+        },
+        "distribute" : {
+            "android" : {
+                "permissions" : [
+                    "<uses-feature android:name=\"android.hardware.camera\"/>",
+                    "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_MOCK_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CALL_PHONE\"/>",
+                    "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+                    "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
+                    "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
+                    "<uses-permission android:name=\"android.permission.GET_TASKS\"/>",
+                    "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+                    "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
+                    "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_CONTACTS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_SMS\"/>",
+                    "<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/>",
+                    "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
+                    "<uses-permission android:name=\"android.permission.SEND_SMS\"/>",
+                    "<uses-permission android:name=\"android.permission.SYSTEM_ALERT_WINDOW\"/>",
+                    "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_CONTACTS\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_SMS\"/>",
+                    "<uses-permission android:name=\"android.permission.RECEIVE_USER_PRESENT\"/>"
+                ]
+            },
+            "ios" : {
+                "urlschemewhitelist" : "baidumap,iosamap",
+                "capabilities" : {
+                    "entitlements" : {
+                        "com.apple.developer.associated-domains" : [
+                            "applinks:static-mp-1d3d6a58-fb3b-4c37-abc9-fa771cd5368d.next.bspapp.com",
+                            "applinks:fun.diaodiandaren.com"
+                        ]
+                    }
+                },
+                "dSYMs" : false,
+                "UIBackgroundModes" : "",
+                "privacyDescription" : {
+                    "NSLocationAlwaysAndWhenInUseUsageDescription" : "导航到精准的钓点需要访问你的位置权限",
+                    "NSPhotoLibraryUsageDescription" : "上传鱼获照片、上传头像需要访问你的相册权限",
+                    "NSPhotoLibraryAddUsageDescription" : "保存钓点图片需要访问你的相册权限",
+                    "NSLocationWhenInUseUsageDescription" : "获取你附近的钓点信息需要访问你的位置权限",
+                    "NSLocationAlwaysUsageDescription" : "获取你附近的钓点信息需要访问你的位置权限",
+                    "NSLocalNetworkUsageDescription" : "App不会连接到您所用网络上的设备，只会检测与您本地网关的连通性。用户也可以在 iOS 设备的设置-隐私-本地网络界面修改此App的权限设置。",
+                    "NSCameraUsageDescription" : "拍摄钓点环境、渔获照片用于发布钓点需要访问你的相机权限",
+                    "NSMicrophoneUsageDescription" : "录制钓点环境需要访问你的麦克风权限",
+                    "NSContactsUsageDescription" : "导入通讯录好友，快速邀请组队钓鱼、互相关注钓场动态，或分享钓点给通讯录内钓友。"
+                },
+                "urltypes" : "diaodiandaren",
+                "idfa" : false
+            },
+            "sdkConfigs" : {
+                "oauth" : {
+                    "univerify" : {},
+                    "weixin" : {
+                        "appid" : "wx96fed53a7e9793c3",
+                        "UniversalLinks" : "https://fun.diaodiandaren.com/uni-universallinks/__UNI__CA8E78B/"
+                    },
+                    "apple" : {}
+                },
+                "share" : {},
+                "statics" : {},
+                "geolocation" : {
+                    "amap" : {
+                        "name" : "amapU0fQQARV",
+                        "__platform__" : [ "ios", "android" ],
+                        "appkey_ios" : "17201309caaf4098d0030a9346c0cbbe",
+                        "appkey_android" : "8de9f81be70c59c11e5fd1f3cc5b2995"
+                    }
+                },
+                "maps" : {
+                    "amap" : {
+                        "name" : "amapU0fQQARV",
+                        "appkey_ios" : "17201309caaf4098d0030a9346c0cbbe",
+                        "appkey_android" : "8de9f81be70c59c11e5fd1f3cc5b2995"
+                    }
+                },
+                "push" : {},
+                "payment" : {
+                    "appleiap" : {},
+                    "weixin" : {
+                        "__platform__" : [ "android" ],
+                        "appid" : "wx96fed53a7e9793c3",
+                        "UniversalLinks" : "https://fun.diaodiandaren.com/uni-universallinks/__UNI__CA8E78B/"
+                    },
+                    "alipay" : {
+                        "__platform__" : [ "android" ]
+                    }
+                }
+            },
+            "icons" : {
+                "android" : {
+                    "hdpi" : "unpackage/res/icons/72x72.png",
+                    "xhdpi" : "unpackage/res/icons/96x96.png",
+                    "xxhdpi" : "unpackage/res/icons/144x144.png",
+                    "xxxhdpi" : "unpackage/res/icons/192x192.png"
+                },
+                "ios" : {
+                    "appstore" : "unpackage/res/icons/1024x1024.png",
+                    "ipad" : {
+                        "app" : "unpackage/res/icons/76x76.png",
+                        "app@2x" : "unpackage/res/icons/152x152.png",
+                        "notification" : "unpackage/res/icons/20x20.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png",
+                        "proapp@2x" : "unpackage/res/icons/167x167.png",
+                        "settings" : "unpackage/res/icons/29x29.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "spotlight" : "unpackage/res/icons/40x40.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png"
+                    },
+                    "iphone" : {
+                        "app@2x" : "unpackage/res/icons/120x120.png",
+                        "app@3x" : "unpackage/res/icons/180x180.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png",
+                        "notification@3x" : "unpackage/res/icons/60x60.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "settings@3x" : "unpackage/res/icons/87x87.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
+                        "spotlight@3x" : "unpackage/res/icons/120x120.png"
+                    }
+                }
+            },
+            "splashscreen" : {
+                "androidStyle" : "default",
+                "useOriginalMsgbox" : true,
+                "iosStyle" : "storyboard",
+                "ios" : {
+                    "storyboard" : "CustomStoryboard.zip"
+                },
+                "android" : {
+                    "hdpi" : "C:/Users/Tike/Desktop/111/jpg_启动页2@2x.9.png",
+                    "xhdpi" : "C:/Users/Tike/Desktop/111/jpg_启动页2@2x.9.png",
+                    "xxhdpi" : "C:/Users/Tike/Desktop/111/jpg_启动页2@2x.9.png"
+                }
+            }
+        },
+        "nvueLaunchMode" : ""
+    },
+    "quickapp" : {},
+    "mp-weixin" : {
+        "appid" : "wx2439aff7ed572585",
+        "setting" : {
+            "urlCheck" : false,
+            "es6" : true,
+            "postcss" : true,
+            "minified" : true,
+            "checkSiteMap" : false
+        },
+        "usingComponents" : true,
+        "lazyCodeLoading" : "requiredComponents",
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "方便自动填写地址"
+            }
+        },
+        "__usePrivacyCheck__" : true,
+        "libVersion" : "latest"
+    },
+    "mp-alipay" : {
+        "usingComponents" : true
+    },
+    "mp-baidu" : {
+        "usingComponents" : true,
+        "setting" : {
+            "urlCheck" : false
+        }
+    },
+    "mp-toutiao" : {
+        "usingComponents" : true,
+        "setting" : {
+            "urlCheck" : false,
+            "minified" : true,
+            "postcss" : true,
+            "es6" : false
+        }
+    },
+    "uniStatistics" : {
+        "enable" : false
+    },
+    "h5" : {
+        "title" : "",
+        "template" : "template.h5.html",
+        "devServer" : {
+            "disableHostCheck" : true,
+            "https" : false
+        },
+        "sdkConfigs" : {
+            "maps" : {
+                "amap" : {
+                    "key" : "8c4a0232f5935cba955586ef625eebc9",
+                    "securityJsCode" : "957add739198c8b0107af09543c16308",
+                    "serviceHost" : ""
+                }
+            }
+        }
+    },
+    "vueVersion" : "3",
+    "mp-qq" : {
+        "setting" : {
+            "urlCheck" : false,
+            "minified" : true,
+            "postcss" : true,
+            "es6" : false
+        }
+    },
+    "networkTimeout" : {
+        "request" : 180000,
+        "connectSocket" : 60000,
+        "uploadFile" : 6000000,
+        "downloadFile" : 6000000
+    },
+    "_spaceID" : "mp-e1569735-8475-4af7-bfe0-86e1c95d4a8e",
+    "_qq_spaceID" : "mp-e1569735-8475-4af7-bfe0-86e1c95d4a8e",
+    "locale" : "zh-Hans"
+}

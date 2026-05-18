@@ -1,0 +1,16 @@
+.page {
+  background-color: #f7f7f7 !important;
+  font-family: sans-serif !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
+.pb-env {
+  padding-bottom: calc(env(safe-area-inset-bottom) / 2);
+}
+
+@font-face {
+  font-family: 'oxanium';
+  src: url('font/Oxanium-Bold.ttf');
+}

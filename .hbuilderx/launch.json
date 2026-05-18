@@ -1,0 +1,36 @@
+{
+    "version" : "1.0",
+    "configurations" : [
+        {
+            "app" : {
+                "launchtype" : "remote"
+            },
+            "app-plus" : {
+                "launchtype" : "local"
+            },
+            "default" : {
+                "launchtype" : "local"
+            },
+            "h5" : {
+                "launchtype" : "local"
+            },
+            "mp-weixin" : {
+                "launchtype" : "local"
+            },
+            "provider" : "aliyun",
+            "type" : "uniCloud"
+        },
+        {
+            "customPlaygroundType" : "device",
+            "openVueDevtools" : true,
+            "playground" : "custom",
+            "type" : "uni-app:app-ios"
+        },
+        {
+            "customPlaygroundType" : "local",
+            "openVueDevtools" : true,
+            "playground" : "custom",
+            "type" : "uni-app:app-android"
+        }
+    ]
+}

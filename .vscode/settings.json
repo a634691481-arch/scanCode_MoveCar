@@ -1,0 +1,67 @@
+{
+  "workbench.colorCustomizations": {
+    "tab.activeBackground": "#339933",
+    "tab.activeForeground": "#ffffff",
+    "list.activeSelectionBackground": "#339933",
+    "list.activeSelectionForeground": "#ffffff",
+    "list.hoverBackground": "#339933",
+    "list.hoverForeground": "#ffffff",
+    "list.inactiveSelectionBackground": "#339933",
+    "list.inactiveSelectionForeground": "#ffffff",
+  },
+  // editor
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.cursorBlinking": "expand",
+  "editor.largeFileOptimizations": true,
+  "editor.accessibilitySupport": "off",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.guides.bracketPairs": "active",
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggestSelection": "recentlyUsedByPrefix",
+  "editor.acceptSuggestionOnEnter": "smart",
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "editor.stickyScroll.enabled": true,
+  "editor.hover.sticky": true,
+  "editor.suggest.insertMode": "replace",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.autoClosingBrackets": "beforeWhitespace",
+  "editor.autoClosingDelete": "always",
+  "editor.autoClosingOvertype": "always",
+  "editor.autoClosingQuotes": "beforeWhitespace",
+  "editor.wordSeparators": "`~!@#%^&*()=+[{]}\\|;:'\",.<>/?",
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+
+  // ========== 文件嵌套折叠（根目录配置文件归类） ==========
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json,pnpm-lock.yaml,.prettierrc,.prettierignore",
+    ".env.development": ".env.production",
+    ".gitignore": ".prettierignore",
+    "vite.config.js": "tailwind.config.js,postcss.config.js,tsconfig.json",
+    "App.vue": "App.ku.vue",
+    "manifest.json": "androidPrivacy.json,pages.json,theme.json",
+    "main.js": "app.config.js,index.html,template.h5.html",
+    "uni.scss": ""
+  },
+
+  // ========== 目录隐藏（按使用频率归类） ==========
+  "files.exclude": {
+    // 【构建产物 & 依赖】几乎不手动操作，完全隐藏
+    "**/node_modules": true,
+    "**/unpackage": true,
+
+    // 【IDE & 工具配置】初始化后很少改动，隐藏减少干扰
+    "**/.hbuilderx": true,
+    
+
+    // 【如需修改云函数则取消下面这行】
+    "**/uniCloud-aliyun": true
+  },
+
+  // 单层空文件夹自动压缩（pages/error/404 显示成一行）
+  "explorer.compactFolders": true
+}

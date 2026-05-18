@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "uview-pro": {
+      "source": "uview-pro/skills",
+      "sourceType": "github",
+      "skillPath": "skills/uview-pro/SKILL.md",
+      "computedHash": "bfbd82d65f6f781db725e60056e9d68dabb8fcea4c9a8076dc6c8a8e0bd2d525"
+    }
+  }
+}

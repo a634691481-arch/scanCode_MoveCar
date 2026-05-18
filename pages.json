@@ -1,0 +1,95 @@
+{
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^yy-(.*)": "@/components/yy-$1.vue",
+			"^u-(.*)": "@/uni_modules/uview-pro/components/u-$1/u-$1.vue"
+		}
+	},
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"disableScroll": false,
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "挪车助手"
+			}
+		},
+		{
+			"path": "pages/my/index",
+			"style": {
+				"disableScroll": false,
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/contact/index",
+			"style": {
+				"disableScroll": false,
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "联系车主"
+			}
+		},
+		{
+			"path": "pages/qrcode/index",
+			"style": {
+				"disableScroll": false,
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "我的挪车码"
+			}
+		},
+		{
+			"path": "pages/history/index",
+			"style": {
+				"disableScroll": false,
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "挪车记录"
+			}
+		},
+		{
+			"path": "pages/error/404/404",
+			"style": {
+				"disableScroll": true,
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/error/404",
+			"style": {
+				"disableScroll": true,
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/login/index",
+			"style": {
+				"disableScroll": true,
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/test/index",
+			"style": {
+				"disableScroll": true,
+				"enablePullDownRefresh": false
+			}
+		}
+	],
+	"globalStyle": {
+		"backgroundColor": "@bgColor",
+		"backgroundColorBottom": "@bgColorBottom",
+		"backgroundColorTop": "@bgColorTop",
+		"backgroundTextStyle": "@bgTxtStyle",
+		"navigationBarBackgroundColor": "#2563eb",
+		"navigationBarTextStyle": "@navTxtStyle",
+		"navigationBarTitleText": "挪车助手",
+		"navigationStyle": "custom"
+	},
+	"tabBar": {
+		"color": "@tabFontColor",
+		"selectedColor": "@tabSelectedColor",
+		"backgroundColor": "@tabBgColor",
+		"borderStyle": "@tabBorderStyle"
+	}
+}
