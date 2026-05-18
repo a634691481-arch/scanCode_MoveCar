@@ -28,9 +28,9 @@
           <text class="empty-title">未找到该车辆信息</text>
           <text class="empty-desc">该车主可能尚未注册挪车助手</text>
           <view class="empty-actions">
-            <view class="empty-btn-primary" @click="useFallback">
+            <view class="empty-btn-primary" @click="call114">
               <yy-icon name="ri:phone-line" size="16" color="#ffffff" />
-              <text class="empty-btn-text">通过 122 求助</text>
+              <text class="empty-btn-text">拨打 114 查询</text>
             </view>
             <view class="empty-btn-secondary" @click="goBack">
               <text class="empty-btn-secondary-text">返回</text>
@@ -58,6 +58,10 @@
               <text class="info-label">联系电话</text>
               <text class="info-value">{{ displayPhone }}</text>
             </view>
+            <view class="info-row" v-if="ownerInfo.subPhone">
+              <text class="info-label">副号</text>
+              <text class="info-value">{{ ownerInfo.subPhone }}</text>
+            </view>
             <view class="info-row" v-if="ownerInfo.note">
               <text class="info-label">联系说明</text>
               <text class="info-value">{{ ownerInfo.note }}</text>
@@ -81,6 +85,16 @@
           <yy-icon name="ri:arrow-right-s-line" size="20" color="#ffffff" />
         </view>
 
+        <view v-if="ownerInfo.pushToken" class="action-btn action-btn-notify" @click="sendNotify">
+          <view class="action-icon-wrap" style="background: #dbeafe;">
+            <yy-icon name="ri:notification-3-fill" size="24" :color="uni.$u.color.primary" />
+          </view>
+          <view class="action-text-group">
+            <text class="action-title-dark">发送挪车通知</text>
+            <text class="action-subtitle-dark">通过公众号推送消息给车主</text>
+          </view>
+          <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
+        </view>
 
       </view>
 
@@ -127,9 +141,11 @@
   const ownerInfo = ref({
     plate: '',
     phone: '',
+    subPhone: '',
     carDesc: '',
     note: '',
     hidePhone: false,
+    pushToken: '',
   })
 
   const displayPhone = computed(() => {
@@ -157,39 +173,32 @@
   onLoad(options => {
     plate.value = decodeURIComponent(options.plate || '')
 
-    // 来自扫码的直接传递信息
-    if (options.type === 'scan' && options.phone) {
-      ownerInfo.value = {
-        plate: plate.value,
-        phone: decodeURIComponent(options.phone),
-        carDesc: '',
-        note: decodeURIComponent(options.note || ''),
-        hidePhone: false,
+    // 来自API查询的车主数据（搜索或扫码）
+    if (options.owner) {
+      try {
+        const data = JSON.parse(decodeURIComponent(options.owner))
+        ownerInfo.value = {
+          plate: data.plate || plate.value,
+          phone: data.phone || '',
+          subPhone: data.subPhone || '',
+          carDesc: data.carDesc || '',
+          note: data.note || '',
+          ownerName: data.ownerName || '',
+          hidePhone: data.hidePhone || false,
+          pushToken: data.pushToken || '',
+        }
+        searching.value = false
+        found.value = true
+      } catch {
+        searching.value = false
+        found.value = false
       }
-      searching.value = false
-      found.value = true
       return
     }
 
-    // 模拟查询车主信息（实际应调用后端 API）
-    setTimeout(() => {
-      const myInfo = vk.getStorageSync('my_car_info')
-      if (myInfo && myInfo.plate === plate.value) {
-        ownerInfo.value = { ...myInfo }
-        found.value = true
-      } else {
-        ownerInfo.value = {
-          plate: plate.value,
-          phone: '13800138000',
-          carDesc: '',
-          note: '',
-          hidePhone: false,
-        }
-        found.value = true
-      }
-
-      searching.value = false
-    }, 800)
+    // 无任何数据
+    searching.value = false
+    found.value = false
   })
 
   function scroll(e) {
@@ -202,18 +211,64 @@
   }
 
   function callPhone() {
-    if (!ownerInfo.value.phone) {
+    const phone = ownerInfo.value.phone
+    const subPhone = ownerInfo.value.subPhone
+    if (!phone && !subPhone) {
       vk.toast('电话号码不可用')
       return
     }
+    if (phone && subPhone) {
+      vk.confirm({
+        title: '选择拨打号码',
+        content: `主号：${phone}\n副号：${subPhone}`,
+        confirmText: '拨打主号',
+        cancelText: '拨打副号',
+        success: (res) => {
+          if (res.confirm) {
+            uni.makePhoneCall({ phoneNumber: phone, fail: () => {} })
+          } else {
+            uni.makePhoneCall({ phoneNumber: subPhone, fail: () => {} })
+          }
+        },
+      })
+      return
+    }
     uni.makePhoneCall({
-      phoneNumber: ownerInfo.value.phone,
+      phoneNumber: phone || subPhone,
       fail: () => {},
     })
   }
 
-  function useFallback() {
-    uni.makePhoneCall({ phoneNumber: '122', fail: () => {} })
+  function call114() {
+    uni.makePhoneCall({ phoneNumber: '114', fail: () => {} })
+  }
+
+  async function sendNotify() {
+    const token = ownerInfo.value.pushToken
+    if (!token) {
+      vk.toast('该车主未配置推送通道')
+      return
+    }
+    vk.showLoading({ title: '发送中...', mask: true })
+    try {
+      const res = await vk.callFunction({
+        url: 'client/pub_index.sendMoveCarNotify',
+        data: {
+          plate: ownerInfo.value.plate,
+          token,
+        },
+        needAlert: false,
+      })
+      vk.hideLoading()
+      if (res.code === 0) {
+        vk.toast('通知已发送')
+      } else {
+        vk.toast(res.msg || '发送失败')
+      }
+    } catch (err) {
+      vk.hideLoading()
+      vk.toast('发送失败，请稍后重试')
+    }
   }
 
   function goBack() {
@@ -499,6 +554,12 @@
   .action-btn-sms {
     background: #f9fafb;
     border: 1px solid #e5e7eb;
+  }
+
+  .action-btn-notify {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 0;
   }
 
   .action-icon-wrap {

@@ -2,7 +2,14 @@
 	<yy-paging v-model="state.dataList" @query="queryList" ref="paging" @scroll="scroll" v-bind="pagingConfig">
 		<view class="page-content">
 			<!-- 二维码展示卡 -->
-			<view class="qr-card" v-if="hasInfo">
+			<!-- loading -->
+			<view class="loading-wrap" v-if="loading">
+				<view class="loading-spinner"></view>
+				<text class="loading-text">加载中...</text>
+			</view>
+
+			<!-- 二维码展示卡 -->
+			<view class="qr-card" v-else-if="hasInfo">
 				<!-- 车牌信息头部 -->
 				<view class="qr-card-header">
 					<view class="qr-car-icon" :style="qrCarIconStyle">
@@ -114,6 +121,7 @@
 		hidePhone: false,
 	})
 	const hasInfo = ref(false)
+	const loading = ref(true)
 
 	const displayPhone = computed(() => {
 		if (!carInfo.value.phone) return ''
@@ -143,14 +151,46 @@
 		color: uni.$u.color.primary,
 	}))
 
-	onLoad(() => {
-		const saved = vk.getStorageSync('my_car_info')
-		if (saved && saved.plate && saved.phone) {
-			carInfo.value = saved
-			hasInfo.value = true
+	async function loadCarInfo() {
+		loading.value = true
+		try {
+			const saved = vk.getStorageSync('my_car_plate')
+			if (!saved) {
+				hasInfo.value = false
+				loading.value = false
+				return
+			}
+			const res = await vk.callFunction({
+				url: 'client/pub_index.getMyCarInfo',
+				data: { plate: saved },
+				needAlert: false,
+			})
 
-
+			if (res.code === 0 && res.data) {
+				carInfo.value = {
+					plate: res.data.plate,
+					phone: res.data.phone,
+					carDesc: res.data.carDesc || '',
+					note: res.data.note || '',
+					hidePhone: res.data.hidePhone || false,
+				}
+				hasInfo.value = true
+			} else {
+				hasInfo.value = false
+			}
+		} catch (err) {
+			hasInfo.value = false
+		} finally {
+			loading.value = false
 		}
+	}
+
+	onLoad(() => {
+		loadCarInfo()
+	})
+
+	onShow(() => {
+		loadCarInfo()
 	})
 
 	function scroll(e) {
@@ -398,5 +438,33 @@
 		font-size: 12px;
 		color: #6b7280;
 		line-height: 1.5;
+	}
+
+	/* loading */
+	.loading-wrap {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 120px 32px 0;
+		gap: 16px;
+	}
+
+	.loading-spinner {
+		width: 36px;
+		height: 36px;
+		border: 3px solid #e5e7eb;
+		border-top-color: var(--u-type-primary);
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.loading-text {
+		font-size: 14px;
+		color: #9ca3af;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
 	}
 </style>
