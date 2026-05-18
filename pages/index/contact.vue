@@ -82,7 +82,7 @@
         </view>
 
         <view class="action-btn action-btn-sms" @click="sendSMS">
-          <view class="action-icon-wrap" style="background: #eff6ff;">
+          <view class="action-icon-wrap" :style="{ background: uni.$u.color.primaryLight }">
             <yy-icon name="ri:message-3-line" size="24" :color="uni.$u.color.primary" />
           </view>
           <view class="action-text-group">
@@ -212,7 +212,7 @@
 
     // 模拟查询车主信息（实际应调用后端 API）
     setTimeout(() => {
-      const myInfo = uni.getStorageSync('my_car_info')
+      const myInfo = vk.getStorageSync('my_car_info')
       if (myInfo && myInfo.plate === plate.value) {
         ownerInfo.value = { ...myInfo }
         found.value = true
@@ -242,14 +242,14 @@
   }
 
   function saveContactRecord() {
-    const records = uni.getStorageSync('move_car_history') || []
+    const records = vk.getStorageSync('move_car_history') || []
     records.unshift({
       plate: plate.value,
       phone: ownerInfo.value.phone,
       time: Date.now(),
       type: 'sent',
     })
-    uni.setStorageSync('move_car_history', records.slice(0, 100))
+    vk.setStorageSync('move_car_history', records.slice(0, 100))
   }
 
   function callPhone() {
@@ -296,7 +296,7 @@
   }
 
   function goBack() {
-    uni.navigateBack({ fail: () => vk.navigateTo('/pages/index/index') })
+    vk.navigateBack({ fail: () => vk.navigateTo('/pages/index/index') })
   }
 </script>
 

@@ -164,7 +164,7 @@
   }))
 
   onLoad(() => {
-    const saved = uni.getStorageSync('my_car_info')
+    const saved = vk.getStorageSync('my_car_info')
     if (saved && saved.plate && saved.phone) {
       carInfo.value = saved
       hasInfo.value = true
@@ -502,14 +502,12 @@
   .step-num {
     width: 24px;
     height: 24px;
-    background: #eff6ff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 12px;
     font-weight: 700;
-    color: #2563eb;
     flex-shrink: 0;
   }
 

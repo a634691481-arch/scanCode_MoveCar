@@ -10,7 +10,7 @@ description: >
 
 ## 核心原则
 
-**禁止使用** `uni.showToast`、`uni.showModal`、`uni.navigateTo`、`uni.redirectTo`、`uni.reLaunch`、`uni.switchTab`、`uni.navigateBack`、`uni.showLoading`、`uni.hideLoading`、`uni.showActionSheet` 等原生 API。
+**禁止使用** `uni.showToast`、`uni.showModal`、`uni.navigateTo`、`uni.redirectTo`、`uni.reLaunch`、`uni.switchTab`、`uni.navigateBack`、`uni.showLoading`、`uni.hideLoading`、`uni.showActionSheet`、`uni.getStorageSync`、`uni.setStorageSync` 等原生 API。
 
 **必须使用** `vk` 框架已封装的对应 API。
 
@@ -32,6 +32,8 @@ description: >
 | 返回上一页 | `uni.navigateBack` | `vk.navigateBack(delta)` |
 | 返回首页 | `uni.reLaunch({ url: '/pages/index/index' })` | `vk.navigateToHome()` |
 | 跳转登录 | `uni.navigateTo({ url: '/pages/login/index' })` | `vk.navigateToLogin()` |
+| 读取本地存储 | `uni.getStorageSync(key)` | `vk.getStorageSync(key)` |
+| 写入本地存储 | `uni.setStorageSync(key, value)` | `vk.setStorageSync(key, value)` |
 
 ## 常用 API 详细用法
 
@@ -119,9 +121,8 @@ vk.hideLoading()
 1. `uni.makePhoneCall` — vk 无电话拨打封装
 2. `uni.setClipboardData` — vk 无剪贴板封装
 3. `uni.scanCode` — vk 无扫码封装
-4. `uni.getStorageSync` / `uni.setStorageSync` — 存储操作
-5. `uni.getSystemInfoSync` — 系统信息
-6. `uni.canvasToTempFilePath` / `uni.saveImageToPhotosAlbum` — 图片操作
+4. `uni.getSystemInfoSync` — 系统信息
+5. `uni.canvasToTempFilePath` / `uni.saveImageToPhotosAlbum` — 图片操作
 
 ## 代码审查检查项
 
@@ -131,4 +132,4 @@ vk.hideLoading()
 - [ ] 所有页面跳转使用 `vk.navigateTo` / `vk.redirectTo` / `vk.reLaunch` / `vk.switchTab` / `vk.navigateBack`
 - [ ] 所有 loading 使用 `vk.showLoading` / `vk.hideLoading`
 - [ ] 所有 actionSheet 使用 `vk.showActionSheet`
-- [ ] 无遗漏的 `uni.showToast`、`uni.showModal`、`uni.navigateTo` 等原生调用
+- [ ] 无遗漏的 `uni.showToast`、`uni.showModal`、`uni.navigateTo`、`uni.getStorageSync`、`uni.setStorageSync` 等原生调用

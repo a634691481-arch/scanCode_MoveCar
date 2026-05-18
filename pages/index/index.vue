@@ -200,7 +200,7 @@
   }
 
   function loadHistory() {
-    const history = uni.getStorageSync('plate_search_history') || []
+    const history = vk.getStorageSync('plate_search_history') || []
     historyPlates.value = history.slice(0, 6)
   }
 
@@ -213,16 +213,16 @@
   }
 
   function clearHistory() {
-    uni.setStorageSync('plate_search_history', [])
+    vk.setStorageSync('plate_search_history', [])
     historyPlates.value = []
   }
 
   function saveHistory(plate) {
-    let history = uni.getStorageSync('plate_search_history') || []
+    let history = vk.getStorageSync('plate_search_history') || []
     history = history.filter(p => p !== plate)
     history.unshift(plate)
     history = history.slice(0, 10)
-    uni.setStorageSync('plate_search_history', history)
+    vk.setStorageSync('plate_search_history', history)
   }
 
   function contactOwner(type) {
@@ -319,9 +319,7 @@
     align-items: center;
     gap: 16px;
     padding: 20px;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #3b82f6 100%);
     border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
   }
 
   .hero-icon-wrap {
@@ -332,7 +330,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
     flex-shrink: 0;
   }
 
@@ -356,7 +353,6 @@
     background: #ffffff;
     border-radius: 24px;
     padding: 24px 20px 20px;
-    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.08);
   }
 
   /* 输入区 */
@@ -545,13 +541,11 @@
   .btn-call {
     flex: 1;
     height: 50px;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
     &:active {
       opacity: 0.9;
       transform: scale(0.98);
@@ -567,9 +561,7 @@
   .btn-msg {
     flex: 1;
     height: 50px;
-    background: #eff6ff;
     border-radius: 14px;
-    border: 1.5px solid #bfdbfe;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -608,7 +600,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
     flex-shrink: 0;
   }
 

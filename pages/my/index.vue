@@ -174,6 +174,17 @@
           <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
         </view>
 
+        <view class="menu-item" @click="showThemePicker">
+          <view class="menu-icon" :style="{ background: uni.$u.color.primaryLight }">
+            <yy-icon name="ri:palette-line" size="20" :color="uni.$u.color.primary" />
+          </view>
+          <view class="menu-content">
+            <text class="menu-label">主题设置</text>
+            <text class="menu-desc">切换应用主题色</text>
+          </view>
+          <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
+        </view>
+
         <view class="menu-item" @click="showAbout">
           <view class="menu-icon" style="background: #faf5ff">
             <yy-icon name="ri:information-line" size="20" color="#9333ea" />
@@ -191,6 +202,9 @@
 
     <!-- 车牌输入键盘组件 -->
     <yy-plate-keyboard v-model:visible="keyboardVisible" v-model="form.plate" />
+
+    <!-- 主题选择弹框 -->
+    <yy-theme-picker v-model="themePickerVisible" />
   </yy-paging>
 </template>
 
@@ -217,6 +231,7 @@
 
   // ====== 业务状态 ======
   const keyboardVisible = ref(false)
+  const themePickerVisible = ref(false)
 
   const form = ref({
     plate: '',
@@ -278,12 +293,12 @@
   }
 
   function loadInfo() {
-    const saved = uni.getStorageSync('my_car_info')
+    const saved = vk.getStorageSync('my_car_info')
     if (saved) {
       form.value = { ...form.value, ...saved }
       hasSaved.value = true
     }
-    const history = uni.getStorageSync('move_car_history') || []
+    const history = vk.getStorageSync('move_car_history') || []
     historyCount.value = history.length
   }
 
@@ -303,7 +318,7 @@
       }
     }
 
-    uni.setStorageSync('my_car_info', form.value)
+    vk.setStorageSync('my_car_info', form.value)
     hasSaved.value = true
 
     vk.toast('保存成功', 'success')
@@ -328,6 +343,10 @@
   function showAbout() {
     vk.alert('一款便捷的挪车工具，帮助您快速联系车主或被联系，让出行更高效。\n\n版本：v1.0.0', '关于挪车助手', '我知道了')
   }
+
+  function showThemePicker() {
+    themePickerVisible.value = true
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -343,7 +362,6 @@
     flex-direction: column;
     align-items: center;
     padding: 20px 0 24px;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #3b82f6 100%);
   }
 
   .avatar-wrap {
@@ -352,13 +370,11 @@
     background: rgba(255, 255, 255, 0.25);
     border-radius: 50%;
     padding: 4px;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
   }
 
   .avatar {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #60a5fa, #2563eb);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -555,13 +571,11 @@
   .save-btn {
     margin-top: 8px;
     height: 50px;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
     &:active {
       opacity: 0.9;
       transform: scale(0.99);

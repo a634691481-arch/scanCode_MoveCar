@@ -189,7 +189,7 @@
   }
 
   function goHome() {
-    uni.navigateBack({ fail: () => vk.navigateTo('/pages/index/index') })
+    vk.navigateBack({ fail: () => vk.navigateTo('/pages/index/index') })
   }
 </script>
 
