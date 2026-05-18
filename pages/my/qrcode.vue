@@ -5,8 +5,8 @@
       <view class="qr-card" v-if="hasInfo">
         <!-- 车牌信息头部 -->
         <view class="qr-card-header">
-          <view class="qr-car-icon">
-            <yy-icon name="ri:car-line" size="28" color="#2563eb" />
+          <view class="qr-car-icon" :style="qrCarIconStyle">
+            <yy-icon name="ri:car-line" size="28" :color="uni.$u.color.primary" />
           </view>
           <view class="qr-car-info">
             <text class="qr-plate">{{ carInfo.plate }}</text>
@@ -25,7 +25,7 @@
             ></canvas>
             <!-- 中心 logo -->
             <view class="qr-center-icon">
-              <yy-icon name="ri:car-fill" size="18" color="#2563eb" />
+              <yy-icon name="ri:car-fill" size="18" :color="uni.$u.color.primary" />
             </view>
           </view>
           <text class="qr-scan-tip">扫描此码即可联系车主</text>
@@ -45,12 +45,12 @@
 
         <!-- 操作按钮 -->
         <view class="qr-actions">
-          <view class="qr-btn-save" @click="saveQRCode">
+          <view class="qr-btn-save" :style="qrBtnSaveStyle" @click="saveQRCode">
             <yy-icon name="ri:download-line" size="18" color="#ffffff" />
             <text class="qr-btn-save-text">保存到相册</text>
           </view>
-          <view class="qr-btn-share" @click="shareQR">
-            <yy-icon name="ri:share-line" size="18" color="#2563eb" />
+          <view class="qr-btn-share" :style="qrBtnShareStyle" @click="shareQR">
+            <yy-icon name="ri:share-line" size="18" :color="uni.$u.color.primary" />
             <text class="qr-btn-share-text">分享</text>
           </view>
         </view>
@@ -63,7 +63,7 @@
         </view>
         <text class="empty-title">暂无挪车码</text>
         <text class="empty-desc">请先在"我的"页面设置车辆信息后再生成挪车码</text>
-        <view class="empty-btn" @click="toMy">
+        <view class="empty-btn" :style="emptyBtnStyle" @click="toMy">
           <text class="empty-btn-text">去设置车辆信息</text>
         </view>
       </view>
@@ -71,7 +71,7 @@
       <!-- 使用说明 -->
       <view class="guide-card" v-if="hasInfo">
         <view class="guide-header">
-          <yy-icon name="ri:question-line" size="16" color="#2563eb" />
+          <yy-icon name="ri:question-line" size="16" :color="uni.$u.color.primary" />
           <text class="guide-title">如何使用挪车码？</text>
         </view>
         <view class="guide-steps">

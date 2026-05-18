@@ -2,9 +2,9 @@
   <yy-paging v-model="state.dataList" @query="queryList" ref="paging" @scroll="scroll" v-bind="pagingConfig">
     <view class="page-content">
       <!-- 用户头像区 -->
-      <view class="profile-section">
-        <view class="avatar-wrap">
-          <view class="avatar">
+      <view class="profile-section" :style="profileSectionStyle">
+        <view class="avatar-wrap" :style="avatarWrapStyle">
+          <view class="avatar" :style="avatarStyle">
             <yy-icon name="ri:user-3-fill" size="40" color="#ffffff" />
           </view>
         </view>
@@ -17,7 +17,7 @@
         <view class="card-header">
           <view class="card-title-row">
             <view class="card-icon">
-              <yy-icon name="ri:car-line" size="20" color="#2563eb" />
+              <yy-icon name="ri:car-line" size="20" :color="uni.$u.color.primary" />
             </view>
             <text class="card-title">我的车辆信息</text>
           </view>
@@ -119,7 +119,7 @@
             <text class="setting-label">隐藏真实手机号</text>
             <text class="setting-desc">他人扫码后仅能通过小程序联系，不显示真实号码</text>
           </view>
-          <switch :checked="form.hidePhone" color="#2563eb" @change="form.hidePhone = $event.detail.value" />
+          <switch :checked="form.hidePhone" :color="uni.$u.color.primary" @change="form.hidePhone = $event.detail.value" />
         </view>
 
         <view class="setting-item">
@@ -127,7 +127,7 @@
             <text class="setting-label">允许语音通话</text>
             <text class="setting-desc">允许他人在小程序内向您发起语音通话</text>
           </view>
-          <switch :checked="form.allowVoiceCall" color="#2563eb" @change="form.allowVoiceCall = $event.detail.value" />
+          <switch :checked="form.allowVoiceCall" :color="uni.$u.color.primary" @change="form.allowVoiceCall = $event.detail.value" />
         </view>
 
         <view class="setting-item" style="border-bottom: none">
@@ -135,7 +135,7 @@
             <text class="setting-label">接收挪车通知</text>
             <text class="setting-desc">他人扫码或搜索您的车辆时推送通知</text>
           </view>
-          <switch :checked="form.receiveNotify" color="#2563eb" @change="form.receiveNotify = $event.detail.value" />
+          <switch :checked="form.receiveNotify" :color="uni.$u.color.primary" @change="form.receiveNotify = $event.detail.value" />
         </view>
       </view>
 
@@ -143,7 +143,7 @@
       <view class="menu-card">
         <view class="menu-item" @click="toQrcode">
           <view class="menu-icon" style="background: #eff6ff">
-            <yy-icon name="ri:qr-code-line" size="20" color="#2563eb" />
+            <yy-icon name="ri:qr-code-line" size="20" :color="uni.$u.color.primary" />
           </view>
           <view class="menu-content">
             <text class="menu-label">我的挪车码</text>

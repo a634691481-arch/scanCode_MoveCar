@@ -20,15 +20,15 @@
       <!-- 统计头部 -->
       <view class="stat-section" v-if="records.length > 0">
         <view class="stat-card">
-          <text class="stat-number">{{ records.length }}</text>
+          <text class="stat-number" :style="statNumberStyle">{{ records.length }}</text>
           <text class="stat-label">总记录</text>
         </view>
         <view class="stat-card">
-          <text class="stat-number">{{ todayCount }}</text>
+          <text class="stat-number" :style="statNumberStyle">{{ todayCount }}</text>
           <text class="stat-label">今日</text>
         </view>
         <view class="stat-card">
-          <text class="stat-number">{{ weekCount }}</text>
+          <text class="stat-number" :style="statNumberStyle">{{ weekCount }}</text>
           <text class="stat-label">本周</text>
         </view>
       </view>
@@ -48,7 +48,7 @@
             <yy-icon
               :name="record.type === 'received' ? 'ri:phone-incoming-line' : 'ri:phone-outgoing-line'"
               size="20"
-              :color="record.type === 'received' ? '#ea580c' : '#2563eb'"
+              :color="record.type === 'received' ? '#ea580c' : uni.$u.color.primary"
             />
           </view>
 
@@ -79,7 +79,7 @@
         </view>
         <text class="empty-title">暂无挪车记录</text>
         <text class="empty-desc">当您联系车主或收到挪车请求后，记录会显示在这里</text>
-        <view class="empty-btn" @click="goHome">
+        <view class="empty-btn" :style="emptyBtnStyle" @click="goHome">
           <text class="empty-btn-text">去首页查询</text>
         </view>
       </view>
@@ -114,6 +114,14 @@
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
     return records.value.filter(r => r.time >= weekAgo).length
   })
+
+  const statNumberStyle = computed(() => ({
+    color: uni.$u.color.primary,
+  }))
+
+  const emptyBtnStyle = computed(() => ({
+    background: uni.$u.color.primary,
+  }))
 
   onShow(() => {
     loadRecords()
@@ -236,7 +244,6 @@
   .stat-number {
     font-size: 26px;
     font-weight: 800;
-    color: #2563eb;
     line-height: 1;
   }
 
@@ -279,7 +286,7 @@
   }
 
   .record-icon-sent {
-    background: #eff6ff;
+    background: var(--u-type-primary-light);
   }
 
   .record-icon-received {

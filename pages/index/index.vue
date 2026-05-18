@@ -3,9 +3,9 @@
     <view class="page-content">
       <!-- Hero 区域 -->
       <view class="hero-section">
-        <view class="hero-card">
-          <view class="hero-icon-wrap">
-            <yy-icon name="ri:car-washing-line" size="48" color="#2563eb" />
+        <view class="hero-card" :style="heroCardStyle">
+          <view class="hero-icon-wrap" :style="heroIconWrapStyle">
+            <yy-icon name="ri:car-washing-line" size="48" :color="uni.$u.color.primary" />
           </view>
           <view class="hero-texts">
             <text class="hero-title">快速联系车主挪车</text>
@@ -15,7 +15,7 @@
       </view>
 
       <!-- 主操作卡片 -->
-      <view class="main-card">
+      <view class="main-card" :style="mainCardStyle">
         <!-- 车牌输入区 -->
         <view class="plate-section">
           <view class="section-header">
@@ -63,12 +63,12 @@
             <text class="contact-tip-text">将向该车辆车主发起挪车请求</text>
           </view>
           <view class="btn-row">
-            <view class="btn-call" @click="contactOwner('call')">
+            <view class="btn-call" :style="btnCallStyle" @click="contactOwner('call')">
               <yy-icon name="ri:phone-line" size="20" color="#ffffff" />
               <text class="btn-text">电话联系</text>
             </view>
-            <view class="btn-msg" @click="contactOwner('sms')">
-              <yy-icon name="ri:message-3-line" size="20" color="#2563eb" />
+            <view class="btn-msg" :style="btnMsgStyle" @click="contactOwner('sms')">
+              <yy-icon name="ri:message-3-line" size="20" :color="uni.$u.color.primary" />
               <text class="btn-msg-text">发送短信</text>
             </view>
           </view>
@@ -76,8 +76,8 @@
 
         <!-- 扫码入口 -->
         <view class="scan-entry" @click="scanQRCode">
-          <view class="scan-icon-wrap">
-            <yy-icon name="ri:qr-scan-2-line" size="24" color="#2563eb" />
+          <view class="scan-icon-wrap" :style="scanIconWrapStyle">
+            <yy-icon name="ri:qr-scan-2-line" size="24" :color="uni.$u.color.primary" />
           </view>
           <view class="scan-texts">
             <text class="scan-title">扫描挪车码</text>

@@ -2,8 +2,8 @@
   <yy-paging v-model="state.dataList" @query="queryList" ref="paging" @scroll="scroll" v-bind="pagingConfig">
     <view class="page-content">
       <!-- 车牌展示 -->
-      <view class="plate-show-section">
-        <view class="plate-show-card">
+      <view class="plate-show-section" :style="plateShowSectionStyle">
+        <view class="plate-show-card" :style="plateShowCardStyle">
           <view class="plate-shine"></view>
           <view class="plate-content">
             <view class="plate-province">{{ plate.charAt(0) }}</view>
@@ -70,7 +70,7 @@
       <view v-if="found && !searching" class="contact-actions-card">
         <text class="action-section-title">选择联系方式</text>
 
-        <view class="action-btn action-btn-call" @click="callPhone">
+        <view class="action-btn action-btn-call" :style="actionBtnCallStyle" @click="callPhone">
           <view class="action-icon-wrap" style="background: rgba(255,255,255,0.2);">
             <yy-icon name="ri:phone-fill" size="24" color="#ffffff" />
           </view>
@@ -83,7 +83,7 @@
 
         <view class="action-btn action-btn-sms" @click="sendSMS">
           <view class="action-icon-wrap" style="background: #eff6ff;">
-            <yy-icon name="ri:message-3-line" size="24" color="#2563eb" />
+            <yy-icon name="ri:message-3-line" size="24" :color="uni.$u.color.primary" />
           </view>
           <view class="action-text-group">
             <text class="action-title-dark">发送短信</text>
@@ -177,6 +177,20 @@
     }
     return ownerInfo.value.phone
   })
+
+  const plateShowSectionStyle = computed(() => ({
+    background: `linear-gradient(135deg, ${uni.$u.color.primary} 0%, ${uni.$u.color.primaryDark} 60%, ${uni.$u.color.primary} 100%)`,
+  }))
+
+  const plateShowCardStyle = computed(() => ({
+    background: `linear-gradient(135deg, ${uni.$u.color.primaryDark}, ${uni.$u.color.primary})`,
+    boxShadow: `0 12px 32px ${uni.$u.color.primary}59`,
+  }))
+
+  const actionBtnCallStyle = computed(() => ({
+    background: `linear-gradient(135deg, ${uni.$u.color.primary}, ${uni.$u.color.primaryDark})`,
+    boxShadow: `0 6px 16px ${uni.$u.color.primary}4d`,
+  }))
 
   onLoad(options => {
     plate.value = decodeURIComponent(options.plate || '')
