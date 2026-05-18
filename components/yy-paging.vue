@@ -251,7 +251,7 @@
       type: Object,
       default: () => ({
         backgroundColor: 'var(--u-type-primary)',
-        backgroundImage: 'linear-gradient(90deg, var(--u-type-primary-dark), var(--u-type-primary-disabled))',
+        // backgroundImage: 'linear-gradient(90deg, var(--u-type-primary-dark), var(--u-type-primary-disabled))',
       }),
     },
   })

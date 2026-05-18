@@ -99,7 +99,12 @@
         </view>
 
         <!-- 保存按钮 -->
-        <view class="save-btn" :class="{ 'save-btn-disabled': !canSave }" :style="canSave ? saveBtnStyle : {}" @click="saveInfo">
+        <view
+          class="save-btn"
+          :class="{ 'save-btn-disabled': !canSave }"
+          :style="canSave ? saveBtnStyle : {}"
+          @click="saveInfo"
+        >
           <yy-icon name="ri:save-line" size="18" color="#ffffff" />
           <text class="save-btn-text">保存车辆信息</text>
         </view>
@@ -119,7 +124,11 @@
             <text class="setting-label">隐藏真实手机号</text>
             <text class="setting-desc">他人扫码后仅能通过小程序联系，不显示真实号码</text>
           </view>
-          <switch :checked="form.hidePhone" :color="uni.$u.color.primary" @change="form.hidePhone = $event.detail.value" />
+          <switch
+            :checked="form.hidePhone"
+            :color="uni.$u.color.primary"
+            @change="form.hidePhone = $event.detail.value"
+          />
         </view>
 
         <view class="setting-item">
@@ -127,7 +136,11 @@
             <text class="setting-label">允许语音通话</text>
             <text class="setting-desc">允许他人在小程序内向您发起语音通话</text>
           </view>
-          <switch :checked="form.allowVoiceCall" :color="uni.$u.color.primary" @change="form.allowVoiceCall = $event.detail.value" />
+          <switch
+            :checked="form.allowVoiceCall"
+            :color="uni.$u.color.primary"
+            @change="form.allowVoiceCall = $event.detail.value"
+          />
         </view>
 
         <view class="setting-item" style="border-bottom: none">
@@ -135,7 +148,11 @@
             <text class="setting-label">接收挪车通知</text>
             <text class="setting-desc">他人扫码或搜索您的车辆时推送通知</text>
           </view>
-          <switch :checked="form.receiveNotify" :color="uni.$u.color.primary" @change="form.receiveNotify = $event.detail.value" />
+          <switch
+            :checked="form.receiveNotify"
+            :color="uni.$u.color.primary"
+            @change="form.receiveNotify = $event.detail.value"
+          />
         </view>
       </view>
 

@@ -1,17 +1,11 @@
 <template>
-  <yy-paging
-    v-model="state.dataList"
-    @query="queryList"
-    ref="paging"
-    @scroll="scroll"
-    v-bind="pagingConfig"
-  >
+  <yy-paging v-model="state.dataList" @query="queryList" ref="paging" @scroll="scroll" v-bind="pagingConfig">
     <!-- 自定义导航栏右侧清除按钮 -->
-    <template #right>
+    <!-- <template #right>
       <view class="nav-right" @click="clearRecords" v-if="records.length > 0">
         <yy-icon name="ri:delete-bin-line" size="20" color="#ffffff" />
       </view>
-    </template>
+    </template> -->
 
     <view class="page-content">
       <!-- 顶部渐变背景 -->
@@ -35,16 +29,8 @@
 
       <!-- 记录列表 -->
       <view class="record-list" v-if="records.length > 0">
-        <view
-          class="record-card"
-          v-for="(record, idx) in records"
-          :key="idx"
-          @click="onRecordTap(record)"
-        >
-          <view
-            class="record-icon"
-            :class="record.type === 'received' ? 'record-icon-received' : 'record-icon-sent'"
-          >
+        <view class="record-card" v-for="(record, idx) in records" :key="idx" @click="onRecordTap(record)">
+          <view class="record-icon" :class="record.type === 'received' ? 'record-icon-received' : 'record-icon-sent'">
             <yy-icon
               :name="record.type === 'received' ? 'ri:phone-incoming-line' : 'ri:phone-outgoing-line'"
               size="20"
@@ -58,10 +44,7 @@
               <text class="record-time">{{ formatTime(record.time) }}</text>
             </view>
             <view class="record-bottom">
-              <text
-                class="record-type-tag"
-                :class="record.type === 'received' ? 'tag-received' : 'tag-sent'"
-              >
+              <text class="record-type-tag" :class="record.type === 'received' ? 'tag-received' : 'tag-sent'">
                 {{ record.type === 'received' ? '收到挪车请求' : '发起挪车请求' }}
               </text>
               <text class="record-phone" v-if="record.phone">{{ maskPhone(record.phone) }}</text>
@@ -84,7 +67,7 @@
         </view>
       </view>
 
-      <view style="height: 40px;"></view>
+      <view style="height: 40px"></view>
     </view>
   </yy-paging>
 </template>
