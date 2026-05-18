@@ -90,8 +90,8 @@
       <!-- 功能入口卡片 -->
       <view class="feature-row">
         <view class="feature-card" @click="toMy">
-          <view class="feature-icon" style="background: #eff6ff">
-            <yy-icon name="ri:car-line" size="28" color="#2563eb" />
+          <view class="feature-icon" :style="{ background: uni.$u.color.primaryLight }">
+            <yy-icon name="ri:car-line" size="28" :color="uni.$u.color.primary" />
           </view>
           <text class="feature-label">我的车辆</text>
           <text class="feature-desc">设置车牌信息</text>
@@ -272,6 +272,34 @@
   function toHistory() {
     vk.navigateTo('/pages/my/history')
   }
+
+  // ====== 主题色动态样式 ======
+  const heroCardStyle = computed(() => ({
+    background: `linear-gradient(135deg, ${uni.$u.color.primary} 0%, ${uni.$u.color.primaryDark} 60%, ${uni.$u.color.primary} 100%)`,
+    boxShadow: `0 8px 24px ${uni.$u.color.primary}40`,
+  }))
+
+  const heroIconWrapStyle = computed(() => ({
+    boxShadow: `0 4px 16px ${uni.$u.color.primary}33`,
+  }))
+
+  const mainCardStyle = computed(() => ({
+    boxShadow: `0 8px 32px ${uni.$u.color.primary}14`,
+  }))
+
+  const btnCallStyle = computed(() => ({
+    background: `linear-gradient(135deg, ${uni.$u.color.primary}, ${uni.$u.color.primaryDark})`,
+    boxShadow: `0 4px 14px ${uni.$u.color.primary}4d`,
+  }))
+
+  const btnMsgStyle = computed(() => ({
+    background: uni.$u.color.primaryLight,
+    border: `1.5px solid ${uni.$u.color.primaryDisabled}`,
+  }))
+
+  const scanIconWrapStyle = computed(() => ({
+    boxShadow: `0 2px 8px ${uni.$u.color.primary}1f`,
+  }))
 </script>
 
 <style lang="scss" scoped>
@@ -346,7 +374,7 @@
   .section-dot {
     width: 4px;
     height: 16px;
-    background: #2563eb;
+    background: var(--u-type-primary);
     border-radius: 2px;
   }
 
@@ -378,19 +406,19 @@
     transition: all 0.2s;
 
     &.plate-cell-active {
-      border-color: #2563eb;
-      background: #eff6ff;
+      border-color: var(--u-type-primary);
+      background: var(--u-type-primary-light);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
 
     &.plate-cell-filled {
-      border-color: #2563eb;
+      border-color: var(--u-type-primary);
       background: #ffffff;
     }
 
     &.plate-cell-province {
-      background: #2563eb;
-      border-color: #2563eb;
+      background: var(--u-type-primary);
+      border-color: var(--u-type-primary);
 
       .plate-cell-text {
         color: #ffffff;
@@ -398,8 +426,8 @@
       }
 
       &.plate-cell-active {
-        background: #1d4ed8;
-        border-color: #1d4ed8;
+        background: var(--u-type-primary-dark);
+        border-color: var(--u-type-primary-dark);
       }
     }
   }
@@ -407,7 +435,7 @@
   .plate-separator-dot {
     width: 8px;
     height: 8px;
-    background: #2563eb;
+    background: var(--u-type-primary);
     border-radius: 50%;
     flex-shrink: 0;
     margin: 0 2px;
@@ -424,7 +452,7 @@
     position: absolute;
     width: 2px;
     height: 26px;
-    background: #2563eb;
+    background: var(--u-type-primary);
     border-radius: 1px;
     animation: blink 1s infinite;
   }
@@ -500,13 +528,13 @@
     gap: 6px;
     margin-bottom: 14px;
     padding: 8px 12px;
-    background: #eff6ff;
+    background: var(--u-type-primary-light);
     border-radius: 10px;
   }
 
   .contact-tip-text {
     font-size: 12px;
-    color: #3b82f6;
+    color: var(--u-type-primary);
   }
 
   .btn-row {
@@ -696,7 +724,5 @@
     color: #6b7280;
     line-height: 1.5;
     flex: 1;
-  }
-</style>
   }
 </style>

@@ -76,21 +76,21 @@
         </view>
         <view class="guide-steps">
           <view class="guide-step">
-            <view class="step-num">1</view>
+            <view class="step-num" :style="stepNumStyle">1</view>
             <view class="step-content">
               <text class="step-title">保存或打印</text>
               <text class="step-desc">点击"保存到相册"，在打印店打印为贴纸</text>
             </view>
           </view>
           <view class="guide-step">
-            <view class="step-num">2</view>
+            <view class="step-num" :style="stepNumStyle">2</view>
             <view class="step-content">
               <text class="step-title">贴在车窗上</text>
               <text class="step-desc">将二维码贴在挡风玻璃内侧或车窗明显位置</text>
             </view>
           </view>
           <view class="guide-step">
-            <view class="step-num">3</view>
+            <view class="step-num" :style="stepNumStyle">3</view>
             <view class="step-content">
               <text class="step-title">等待扫码联系</text>
               <text class="step-desc">他人扫码后可直接拨打您的电话或发送短信</text>
@@ -139,6 +139,29 @@
     if (!carInfo.value.phone) return ''
     return carInfo.value.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
   })
+
+  const qrCarIconStyle = computed(() => ({
+    background: uni.$u.color.primaryLight,
+  }))
+
+  const qrBtnSaveStyle = computed(() => ({
+    background: `linear-gradient(135deg, ${uni.$u.color.primary}, ${uni.$u.color.primaryDark})`,
+    boxShadow: `0 6px 16px ${uni.$u.color.primary}4d`,
+  }))
+
+  const qrBtnShareStyle = computed(() => ({
+    background: uni.$u.color.primaryLight,
+    border: `1.5px solid ${uni.$u.color.primaryDisabled}`,
+  }))
+
+  const emptyBtnStyle = computed(() => ({
+    background: uni.$u.color.primary,
+  }))
+
+  const stepNumStyle = computed(() => ({
+    background: uni.$u.color.primaryLight,
+    color: uni.$u.color.primary,
+  }))
 
   onLoad(() => {
     const saved = uni.getStorageSync('my_car_info')
@@ -275,7 +298,6 @@
   .qr-car-icon {
     width: 52px;
     height: 52px;
-    background: #eff6ff;
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -366,13 +388,11 @@
   .qr-btn-save {
     flex: 2;
     height: 48px;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
     &:active { opacity: 0.9; }
   }
 
@@ -385,9 +405,7 @@
   .qr-btn-share {
     flex: 1;
     height: 48px;
-    background: #eff6ff;
     border-radius: 14px;
-    border: 1.5px solid #bfdbfe;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -398,7 +416,7 @@
   .qr-btn-share-text {
     font-size: 14px;
     font-weight: 600;
-    color: #2563eb;
+    color: var(--u-type-primary);
   }
 
   /* 空状态 */

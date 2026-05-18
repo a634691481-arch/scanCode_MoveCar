@@ -99,7 +99,7 @@
         </view>
 
         <!-- 保存按钮 -->
-        <view class="save-btn" :class="{ 'save-btn-disabled': !canSave }" @click="saveInfo">
+        <view class="save-btn" :class="{ 'save-btn-disabled': !canSave }" :style="canSave ? saveBtnStyle : {}" @click="saveInfo">
           <yy-icon name="ri:save-line" size="18" color="#ffffff" />
           <text class="save-btn-text">保存车辆信息</text>
         </view>
@@ -242,6 +242,23 @@
   const canSave = computed(() => {
     return form.value.plate.length >= 7 && /^1[3-9]\d{9}$/.test(form.value.phone)
   })
+
+  const profileSectionStyle = computed(() => ({
+    background: `linear-gradient(135deg, ${uni.$u.color.primary} 0%, ${uni.$u.color.primaryDark} 60%, ${uni.$u.color.primary} 100%)`,
+  }))
+
+  const avatarWrapStyle = computed(() => ({
+    boxShadow: `0 8px 24px ${uni.$u.color.primary}40`,
+  }))
+
+  const avatarStyle = computed(() => ({
+    background: `linear-gradient(135deg, ${uni.$u.color.primaryDisabled}, ${uni.$u.color.primary})`,
+  }))
+
+  const saveBtnStyle = computed(() => ({
+    background: `linear-gradient(135deg, ${uni.$u.color.primary}, ${uni.$u.color.primaryDark})`,
+    boxShadow: `0 6px 16px ${uni.$u.color.primary}4d`,
+  }))
 
   onLoad(() => {
     loadInfo()
@@ -386,7 +403,7 @@
   .card-icon {
     width: 32px;
     height: 32px;
-    background: #eff6ff;
+    background: var(--u-type-primary-light);
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -505,12 +522,12 @@
     position: relative;
 
     &.plate-cell-filled {
-      border-color: #2563eb;
+      border-color: var(--u-type-primary);
     }
 
     &.plate-cell-province {
-      background: #2563eb;
-      border-color: #2563eb;
+      background: var(--u-type-primary);
+      border-color: var(--u-type-primary);
 
       .plate-cell-text {
         color: #ffffff;

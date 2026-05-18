@@ -137,7 +137,7 @@
   }
 
   function loadRecords() {
-    const history = uni.getStorageSync('move_car_history') || []
+    const history = vk.getStorageSync('move_car_history') || []
     records.value = history
   }
 
@@ -182,7 +182,7 @@
 
   function clearRecords() {
     vk.alert('确定要清除所有挪车记录吗？', '清除记录', '清除', () => {
-      uni.setStorageSync('move_car_history', [])
+      vk.setStorageSync('move_car_history', [])
       records.value = []
       vk.toast('已清除', 'success')
     })
@@ -331,8 +331,8 @@
   }
 
   .tag-sent {
-    background: #eff6ff;
-    color: #2563eb;
+    background: var(--u-type-primary-light);
+    color: var(--u-type-primary);
   }
 
   .tag-received {
@@ -384,7 +384,6 @@
   .empty-btn {
     height: 44px;
     padding: 0 32px;
-    background: #2563eb;
     border-radius: 12px;
     display: flex;
     align-items: center;

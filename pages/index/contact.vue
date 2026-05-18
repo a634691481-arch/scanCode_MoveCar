@@ -313,14 +313,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #3b82f6 100%);
   }
 
   .plate-show-card {
-    background: linear-gradient(135deg, #1d4ed8, #2563eb);
     border-radius: 16px;
     padding: 16px 20px;
-    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.35);
     border: 3px solid #ffffff;
     position: relative;
     overflow: hidden;
@@ -398,7 +395,7 @@
     width: 36px;
     height: 36px;
     border: 3px solid #e5e7eb;
-    border-top-color: #2563eb;
+    border-top-color: var(--u-type-primary);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -575,8 +572,7 @@
   }
 
   .action-btn-call {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+    /* background 和 box-shadow 通过 :style 绑定 actionBtnCallStyle */
   }
 
   .action-btn-sms {
@@ -651,8 +647,8 @@
     border: 1.5px solid transparent;
 
     &.template-item-active {
-      border-color: #2563eb;
-      background: #eff6ff;
+      border-color: var(--u-type-primary);
+      background: var(--u-type-primary-light);
     }
   }
 
@@ -668,14 +664,14 @@
     margin-top: 2px;
 
     .template-item-active & {
-      border-color: #2563eb;
+      border-color: var(--u-type-primary);
     }
   }
 
   .template-radio-inner {
     width: 8px;
     height: 8px;
-    background: #2563eb;
+    background: var(--u-type-primary);
     border-radius: 50%;
   }
 
@@ -689,7 +685,7 @@
   .template-confirm-btn {
     margin-top: 4px;
     height: 42px;
-    background: #2563eb;
+    background: var(--u-type-primary);
     border-radius: 12px;
     display: flex;
     align-items: center;
