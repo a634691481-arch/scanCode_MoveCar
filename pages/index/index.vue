@@ -99,6 +99,13 @@
           <text class="feature-label">挪车码</text>
           <text class="feature-desc">生成专属二维码</text>
         </view>
+        <view class="feature-card" @click="toContactHistory">
+          <view class="feature-icon" style="background: #eff6ff">
+            <yy-icon name="ri:history-line" size="28" :color="uni.$u.color.primary" />
+          </view>
+          <text class="feature-label">联系历史</text>
+          <text class="feature-desc">查看联系记录</text>
+        </view>
       </view>
 
       <!-- 使用说明 -->
@@ -266,8 +273,8 @@
     } catch (err) {
       vk.hideLoading()
       vk.confirm({
-        title: '查询失败',
-        content: '网络异常，是否拨打 114 查询？',
+        title: '未找到该车辆',
+        content: '该车主尚未注册，是否拨打 114 查询？',
         confirmText: '拨打114',
         cancelText: '取消',
         success: confirmRes => {
@@ -327,6 +334,10 @@
 
   function toQrcode() {
     vk.navigateTo('/pages/my/qrcode')
+  }
+
+  function toContactHistory() {
+    vk.navigateTo('/pages/my/contact-history')
   }
 
   // ====== 主题色动态样式 ======

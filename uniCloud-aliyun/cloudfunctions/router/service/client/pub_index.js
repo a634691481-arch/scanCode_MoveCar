@@ -2,6 +2,7 @@
 let vk = uniCloud.vk;
 
 const DB_NAME = 'car-info';
+const CONTACT_HISTORY_DB = 'contact-history';
 
 const cloudObject = {
 	isCloudObject: true,
@@ -252,6 +253,57 @@ const cloudObject = {
 			res.msg = '推送请求失败';
 		}
 
+		return res;
+	},
+
+	addContactHistory: async function(data) {
+		let res = { code: 0, msg: '' };
+		let { uid, plate, contactType, ownerPhone } = data;
+
+		if (!uid) {
+			return { code: -1, msg: '用户未登录' };
+		}
+		if (!plate) {
+			return { code: -1, msg: '车牌号不能为空' };
+		}
+
+		await vk.baseDao.add({
+			dbName: CONTACT_HISTORY_DB,
+			dataJson: {
+				uid,
+				plate: plate.toUpperCase(),
+				contactType: contactType || 'phone',
+				ownerPhone: ownerPhone || '',
+			},
+		});
+
+		res.msg = '记录成功';
+		return res;
+	},
+
+	getContactHistory: async function(data) {
+		let res = { code: 0, msg: '' };
+		let { uid, pageIndex = 1, pageSize = 20 } = data;
+
+		if (!uid) {
+			return { code: -1, msg: '用户未登录' };
+		}
+
+		let listRes = await vk.baseDao.select({
+			dbName: CONTACT_HISTORY_DB,
+			pageIndex,
+			pageSize,
+			whereJson: { uid },
+			sortArr: [{ name: '_add_time', type: 'desc' }],
+			getCount: true,
+		});
+
+		res.data = {
+			rows: listRes.rows || [],
+			total: listRes.total || 0,
+			pageIndex: listRes.pagination?.pageIndex || pageIndex,
+			pageSize: listRes.pagination?.pageSize || pageSize,
+		};
 		return res;
 	},
 };

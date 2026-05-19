@@ -211,33 +211,38 @@
     paging.value?.complete([])
   }
 
-  function callPhone() {
+  async function callPhone() {
     const phone = ownerInfo.value.phone
     const subPhone = ownerInfo.value.subPhone
     if (!phone && !subPhone) {
       vk.toast('电话号码不可用')
       return
     }
-    if (phone && subPhone) {
-      vk.confirm({
-        title: '选择拨打号码',
-        content: `主号：${phone}\n副号：${subPhone}`,
-        confirmText: '拨打主号',
-        cancelText: '拨打副号',
-        success: res => {
-          if (res.confirm) {
-            uni.makePhoneCall({ phoneNumber: phone, fail: () => {} })
-          } else {
-            uni.makePhoneCall({ phoneNumber: subPhone, fail: () => {} })
-          }
+
+    const targetPhone = phone || subPhone
+    uni.makePhoneCall({ phoneNumber: targetPhone, fail: () => {} })
+
+    // 记录联系历史
+    await addContactRecord('phone')
+  }
+
+  async function addContactRecord(contactType) {
+    const uid = vk.getStorageSync('uni_id_token')
+    if (!uid) return
+    try {
+      await vk.callFunction({
+        url: 'client/pub_index.addContactHistory',
+        data: {
+          uid,
+          plate: ownerInfo.value.plate,
+          contactType,
+          ownerPhone: ownerInfo.value.phone,
         },
+        needAlert: false,
       })
-      return
+    } catch (err) {
+      // 静默失败，不影响主流程
     }
-    uni.makePhoneCall({
-      phoneNumber: phone || subPhone,
-      fail: () => {},
-    })
   }
 
   function call114() {
@@ -263,6 +268,7 @@
       vk.hideLoading()
       if (res.code === 0) {
         vk.toast('通知已发送')
+        await addContactRecord('notify')
       } else {
         vk.toast(res.msg || '发送失败')
       }

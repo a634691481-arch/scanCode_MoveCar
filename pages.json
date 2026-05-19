@@ -66,6 +66,13 @@
 				"enablePullDownRefresh": false,
 				"navigationBarTitleText": "我的挪车码"
 			}
+		},
+		{
+			"path": "pages/my/contact-history",
+			"style": {
+				"disableScroll": true,
+				"enablePullDownRefresh": false
+			}
 		}
 	],
 	"globalStyle": {
@@ -78,10 +85,4 @@
 		"navigationBarTitleText": "挪车助手",
 		"navigationStyle": "custom"
 	}
-	// "tabBar": {
-	// 	"color": "@tabFontColor",
-	// 	"selectedColor": "@tabSelectedColor",
-	// 	"backgroundColor": "@tabBgColor",
-	// 	"borderStyle": "@tabBorderStyle"
-	// }
 }

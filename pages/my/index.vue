@@ -198,6 +198,17 @@
           <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
         </view>
 
+        <view class="menu-item" @click="toContactHistory">
+          <view class="menu-icon" style="background: #eff6ff">
+            <yy-icon name="ri:history-line" size="20" :color="uni.$u.color.primary" />
+          </view>
+          <view class="menu-content">
+            <text class="menu-label">联系历史</text>
+            <text class="menu-desc">查看我联系过的车主记录</text>
+          </view>
+          <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
+        </view>
+
         <view class="menu-item" @click="shareApp">
           <view class="menu-icon" style="background: #f0fdf4">
             <yy-icon name="ri:share-forward-line" size="20" color="#16a34a" />
@@ -335,6 +346,22 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
     loadInfo()
   })
 
+  onShareAppMessage(() => {
+    return {
+      title: '扫码挪车 - 便捷联系车主',
+      path: '/pages/index/index',
+      imageUrl: '/static/logo.png',
+    }
+  })
+
+  onShareTimeline(() => {
+    return {
+      title: '扫码挪车 - 便捷联系车主',
+      path: '/pages/index/index',
+      imageUrl: '/static/logo.png',
+    }
+  })
+
   function scroll(e) {
     state.value.isScroll = e.detail.scrollTop > 0
   }
@@ -434,6 +461,10 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
       return
     }
     vk.navigateTo('/pages/my/qrcode')
+  }
+
+  function toContactHistory() {
+    vk.navigateTo('/pages/my/contact-history')
   }
 
   function shareApp() {
