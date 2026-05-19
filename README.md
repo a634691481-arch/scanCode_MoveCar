@@ -1,93 +1,83 @@
-# 它思-天津小程序
+# 挪车助手
 
+便捷的挪车助手工具，输入车牌号或扫码即可联系车主，设置自己的车辆信息生成专属挪车码，让挪车沟通更高效。
 
+## 功能介绍
 
-## Getting started
+- **快速联系车主**：输入车牌号码，一键拨打电话或发送短信通知车主挪车
+- **扫描挪车码**：扫描车主贴在车窗上的二维码，直接联系车主
+- **我的车辆**：管理自己的车辆信息，支持绑定多辆车
+- **挪车码生成**：为每辆车生成专属微信扫码挪车码，可保存海报打印张贴
+- **联系历史**：查看所有的挪车联系记录，支持推送通知和电话联系两种方式
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 技术栈
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- [uni-app](https://uniapp.dcloud.net.cn/) + Vue 3 + Vite
+- [uView Pro](https://www.uviewui.com/) UI 组件库
+- [VK UniCloud](https://vkdoc.fsq.pub/) 云开发框架
+- [TailwindCSS](https://tailwindcss.com/) 原子化 CSS
+- [Iconify](https://iconify.design/) 图标库
 
-## Add your files
+## 项目截图
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### 首页
+
+输入车牌号码快速联系车主，支持扫描挪车码和历史搜索。
+
+![首页](assets/screenshots/home.png)
+
+### 我的车辆
+
+管理已绑定的车辆信息，支持多辆车切换和设置默认车辆。
+
+![我的车辆](assets/screenshots/my-vehicles.png)
+
+### 我的挪车码
+
+生成专属挪车二维码海报，可保存到相册并打印张贴在车窗上。
+
+![我的挪车码](assets/screenshots/qrcode.png)
+
+### 联系历史
+
+查看所有挪车联系记录，统计联系次数和联系车辆数。
+
+![联系历史](assets/screenshots/contact-history.png)
+
+## 开发环境
+
+- HBuilderX 3.1.2+
+- Node.js 16+
+- pnpm
+
+## 运行项目
+
+1. 使用 HBuilderX 打开项目
+2. 安装依赖：
+   ```bash
+   pnpm install
+   ```
+3. 在 HBuilderX 中点击「运行」→ 选择「微信开发者工具」或「H5」
+
+## 目录结构
 
 ```
-cd existing_repo
-git remote add origin http://gitlab.tasitech.com.cn/ChengduTasitech/tianjin_culture_and_tourism/tasi_tianjin_uniapp.git
-git branch -M main
-git push -uf origin main
+├── apis/                  # HTTP API 接口管理
+├── common/                # 公共样式和工具函数
+├── components/            # 自定义业务组件（yy-* 前缀）
+├── pages/                 # 页面目录
+│   ├── index/             # 首页、联系车主
+│   ├── my/                # 我的、挪车码、联系历史
+│   └── login/             # 登录页
+├── static/                # 静态资源
+├── store/                 # Vuex 状态管理
+├── uni_modules/           # uni-app 插件
+│   ├── uview-pro/         # UI 组件库
+│   └── vk-unicloud/       # VK 云开发框架
+├── uniCloud-aliyun/       # 阿里云云函数
+└── manifest.json          # 应用配置
 ```
 
-## Integrate with your tools
+## 许可证
 
-- [ ] [Set up project integrations](http://gitlab.tasitech.com.cn/ChengduTasitech/tianjin_culture_and_tourism/tasi_tianjin_uniapp/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+MIT
