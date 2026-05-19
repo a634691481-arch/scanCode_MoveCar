@@ -177,7 +177,7 @@ async function main() {
       const manifestBackup = fs.readFileSync(MANIFEST_PATH, 'utf-8')
       try {
         buildSpinner.stop()
-        await runCommand(hxCli, ['publish', '--platform', 'mp-weixin', '--project', projectName])
+        await runCommand(hxCli, ['publish', '--platform', 'mp-weixin', '--project', projectName, '--upload', 'true'])
         console.log(`  ${chalk.green(figures.tick)} ${chalk.green('构建完成')}`)
       } catch {
         buildSpinner.stop()
