@@ -85,6 +85,7 @@ const cloudObject = {
 		return res;
 	},
 
+	// 兼容旧接口 - 返回默认车辆
 	getMyCarInfo: async function(data) {
 		let res = { code: 0, msg: '' };
 		let { uid } = data;
@@ -93,10 +94,22 @@ const cloudObject = {
 			return { code: -1, msg: '用户未登录' };
 		}
 
+		// 先查默认车辆
 		let carInfo = await vk.baseDao.findByWhereJson({
 			dbName: DB_NAME,
-			whereJson: { uid }
+			whereJson: { uid, isDefault: true }
 		});
+
+		// 没有默认车辆，取该用户第一辆车
+		if (!carInfo) {
+			let listRes = await vk.baseDao.select({
+				dbName: DB_NAME,
+				whereJson: { uid },
+				pageSize: 1,
+				sortArr: [{ name: '_add_time', type: 'desc' }],
+			});
+			carInfo = listRes.rows && listRes.rows[0] ? listRes.rows[0] : null;
+		}
 
 		if (!carInfo) {
 			res.data = null;
@@ -119,6 +132,61 @@ const cloudObject = {
 		return res;
 	},
 
+	// 获取用户的所有车辆列表
+	getMyCarList: async function(data) {
+		let res = { code: 0, msg: '' };
+		let { uid } = data;
+
+		if (!uid) {
+			return { code: -1, msg: '用户未登录' };
+		}
+
+		let listRes = await vk.baseDao.select({
+			dbName: DB_NAME,
+			whereJson: { uid },
+			pageSize: -1,
+			sortArr: [{ name: 'isDefault', type: 'desc' }, { name: '_add_time', type: 'desc' }],
+		});
+
+		let rows = listRes.rows || [];
+
+		if (rows.length === 0) {
+			res.data = {
+				carList: [],
+				phone: '',
+				subPhone: '',
+				note: '',
+				ownerName: '',
+				hidePhone: false,
+				receiveNotify: true,
+				pushToken: '',
+			};
+			return res;
+		}
+
+		// 取第一条作为基础信息（所有车辆共享用户联系信息）
+		let baseInfo = rows[0];
+
+		res.data = {
+			carList: rows.map(car => ({
+				_id: car._id,
+				plate: car.plate,
+				carDesc: car.carDesc || '',
+				isDefault: car.isDefault || false,
+			})),
+			phone: baseInfo.phone || '',
+			subPhone: baseInfo.subPhone || '',
+			note: baseInfo.note || '',
+			ownerName: baseInfo.ownerName || '',
+			hidePhone: baseInfo.hidePhone || false,
+			receiveNotify: baseInfo.receiveNotify !== false,
+			pushToken: baseInfo.pushToken || '',
+		};
+
+		return res;
+	},
+
+	// 兼容旧接口 - 保存单辆车
 	saveCarInfo: async function(data) {
 		let res = { code: 0, msg: '' };
 		let { uid, plate, phone, subPhone, carDesc, note, ownerName, hidePhone, allowVoiceCall, receiveNotify, pushToken } = data;
@@ -135,12 +203,6 @@ const cloudObject = {
 
 		plate = plate.toUpperCase();
 
-		// 查询当前用户是否已有车辆记录
-		let myCar = await vk.baseDao.findByWhereJson({
-			dbName: DB_NAME,
-			whereJson: { uid }
-		});
-
 		// 查询该车牌是否已被其他用户绑定
 		let plateOwner = await vk.baseDao.findByWhereJson({
 			dbName: DB_NAME,
@@ -150,6 +212,12 @@ const cloudObject = {
 		if (plateOwner && plateOwner.uid !== uid) {
 			return { code: -1, msg: '该车牌号已被其他用户绑定' };
 		}
+
+		// 查询当前用户是否已有这辆车
+		let myCar = await vk.baseDao.findByWhereJson({
+			dbName: DB_NAME,
+			whereJson: { uid, plate }
+		});
 
 		let dataJson = {
 			uid,
@@ -171,7 +239,17 @@ const cloudObject = {
 				dataJson,
 			});
 			res.msg = '更新成功';
+			res.id = myCar._id;
 		} else {
+			// 检查该用户是否已有默认车辆，如果没有则设为默认
+			let hasDefault = await vk.baseDao.findByWhereJson({
+				dbName: DB_NAME,
+				whereJson: { uid, isDefault: true }
+			});
+			if (!hasDefault) {
+				dataJson.isDefault = true;
+			}
+
 			let id = await vk.baseDao.add({
 				dbName: DB_NAME,
 				dataJson
@@ -180,6 +258,130 @@ const cloudObject = {
 			res.id = id;
 		}
 
+		return res;
+	},
+
+	// 保存车辆列表（多辆车）
+	saveCarList: async function(data) {
+		let res = { code: 0, msg: '' };
+		let { uid, carList, phone, subPhone, note, ownerName, hidePhone, receiveNotify, pushToken } = data;
+
+		if (!uid) {
+			return { code: -1, msg: '用户未登录' };
+		}
+		if (!carList || !Array.isArray(carList) || carList.length === 0) {
+			return { code: -1, msg: '请至少添加一辆车' };
+		}
+		if (!phone || !/^1[3-9]\d{9}$/.test(phone)) {
+			return { code: -1, msg: '请输入正确的手机号' };
+		}
+
+		// 过滤有效车辆
+		let validCars = carList.filter(car => car.plate && car.plate.length >= 7);
+		if (validCars.length === 0) {
+			return { code: -1, msg: '请至少输入一辆车的完整车牌号' };
+		}
+
+		// 检查车牌重复
+		let plateSet = new Set();
+		for (let car of validCars) {
+			let p = car.plate.toUpperCase();
+			if (plateSet.has(p)) {
+				return { code: -1, msg: '车牌号不能重复' };
+			}
+			plateSet.add(p);
+		}
+
+		// 检查车牌是否被其他用户绑定
+		for (let car of validCars) {
+			let plateOwner = await vk.baseDao.findByWhereJson({
+				dbName: DB_NAME,
+				whereJson: { plate: car.plate.toUpperCase() }
+			});
+			if (plateOwner && plateOwner.uid !== uid) {
+				return { code: -1, msg: `车牌号 ${car.plate} 已被其他用户绑定` };
+			}
+		}
+
+		// 获取该用户当前所有车辆
+		let existingRes = await vk.baseDao.select({
+			dbName: DB_NAME,
+			whereJson: { uid },
+			pageSize: -1,
+		});
+		let existingCars = existingRes.rows || [];
+		let existingMap = new Map();
+		existingCars.forEach(car => existingMap.set(car._id, car));
+
+		let submittedIds = new Set();
+		let carIds = [];
+
+		// 确保至少有一辆默认车辆
+		let hasDefault = validCars.some(c => c.isDefault);
+		if (!hasDefault && validCars.length > 0) {
+			validCars[0].isDefault = true;
+		}
+
+		for (let i = 0; i < validCars.length; i++) {
+			let car = validCars[i];
+			let plate = car.plate.toUpperCase();
+			let dataJson = {
+				uid,
+				plate,
+				phone,
+				subPhone: subPhone || '',
+				carDesc: car.carDesc || '',
+				note: note || '',
+				ownerName: ownerName || '',
+				hidePhone: hidePhone === true,
+				receiveNotify: receiveNotify !== false,
+				pushToken: pushToken || '',
+				isDefault: car.isDefault === true,
+			};
+
+			if (car._id && existingMap.has(car._id)) {
+				// 更新已有车辆
+				await vk.baseDao.updateById({
+					dbName: DB_NAME,
+					id: car._id,
+					dataJson,
+				});
+				submittedIds.add(car._id);
+				carIds.push(car._id);
+			} else {
+				// 检查是否已有相同车牌的记录（可能_id未传）
+				let existByPlate = existingCars.find(ec => ec.plate === plate);
+				if (existByPlate) {
+					await vk.baseDao.updateById({
+						dbName: DB_NAME,
+						id: existByPlate._id,
+						dataJson,
+					});
+					submittedIds.add(existByPlate._id);
+					carIds.push(existByPlate._id);
+				} else {
+					let id = await vk.baseDao.add({
+						dbName: DB_NAME,
+						dataJson,
+					});
+					submittedIds.add(id);
+					carIds.push(id);
+				}
+			}
+		}
+
+		// 删除用户提交列表中不存在的车辆
+		for (let existing of existingCars) {
+			if (!submittedIds.has(existing._id)) {
+				await vk.baseDao.deleteById({
+					dbName: DB_NAME,
+					id: existing._id,
+				});
+			}
+		}
+
+		res.msg = '保存成功';
+		res.data = { carIds };
 		return res;
 	},
 
@@ -350,6 +552,113 @@ const cloudObject = {
 		});
 
 		res.msg = '清空成功';
+		return res;
+	},
+
+	generateMoveCarQRCode: async function(data) {
+		let res = { code: 0, msg: '' };
+		let { uid } = data;
+
+		if (!uid) {
+			return { code: -1, msg: '用户未登录' };
+		}
+
+		// 先查默认车辆
+		let carInfo = await vk.baseDao.findByWhereJson({
+			dbName: DB_NAME,
+			whereJson: { uid, isDefault: true }
+		});
+
+		// 没有默认车辆，取该用户第一辆车
+		if (!carInfo) {
+			let listRes = await vk.baseDao.select({
+				dbName: DB_NAME,
+				whereJson: { uid },
+				pageSize: 1,
+				sortArr: [{ name: '_add_time', type: 'desc' }],
+			});
+			carInfo = listRes.rows && listRes.rows[0] ? listRes.rows[0] : null;
+		}
+
+		if (!carInfo) {
+			return { code: -1, msg: '请先设置车辆信息' };
+		}
+
+		let scene = `uid=${uid}`;
+		if (scene.length > 32) {
+			return { code: -1, msg: '用户标识过长' };
+		}
+
+		let qrRes = await vk.openapi.weixin.wxacode.getUnlimited({
+			page: 'pages/index/index',
+			scene: scene,
+			check_path: false,
+			width: 430,
+			is_hyaline: false,
+		});
+
+		if (typeof qrRes === 'object' && qrRes.code) {
+			return qrRes;
+		}
+
+		try {
+			let base64 = Buffer.from(qrRes, 'binary').toString('base64');
+			res.data = {
+				base64: `data:image/png;base64,${base64}`,
+				plate: carInfo.plate,
+				phone: carInfo.phone,
+				note: carInfo.note || '',
+			};
+			return res;
+		} catch (err) {
+			return {
+				code: -1,
+				msg: '生成小程序码失败',
+				err: { message: err.message, stack: err.stack },
+			};
+		}
+	},
+
+	getOwnerByUid: async function(data) {
+		let res = { code: 0, msg: '' };
+		let { uid } = data;
+
+		if (!uid) {
+			return { code: -1, msg: '参数错误' };
+		}
+
+		// 先查默认车辆
+		let carInfo = await vk.baseDao.findByWhereJson({
+			dbName: DB_NAME,
+			whereJson: { uid, isDefault: true }
+		});
+
+		// 没有默认车辆，取该用户第一辆车
+		if (!carInfo) {
+			let listRes = await vk.baseDao.select({
+				dbName: DB_NAME,
+				whereJson: { uid },
+				pageSize: 1,
+				sortArr: [{ name: '_add_time', type: 'desc' }],
+			});
+			carInfo = listRes.rows && listRes.rows[0] ? listRes.rows[0] : null;
+		}
+
+		if (!carInfo) {
+			return { code: -1, msg: '未找到该车辆信息' };
+		}
+
+		res.data = {
+			plate: carInfo.plate,
+			carDesc: carInfo.carDesc || '',
+			phone: carInfo.phone || '',
+			subPhone: carInfo.subPhone || '',
+			note: carInfo.note || '',
+			ownerName: carInfo.ownerName || '',
+			hidePhone: carInfo.hidePhone || false,
+			pushToken: carInfo.pushToken || '',
+		};
+
 		return res;
 	},
 };

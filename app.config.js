@@ -48,7 +48,7 @@ export default {
      */
     mode: 2,
     // ['shareAppMessage', 'shareTimeline'],
-    menus: ['shareAppMessage', 'shareTimeline'],
+    menus: [ ],
     list: [],
   },
   checkEncryptRequest: {

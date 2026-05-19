@@ -178,8 +178,10 @@
     return chars
   })
 
-  onLoad(() => {
+  onLoad(options => {
     loadHistory()
+    // 处理小程序码扫码进入（scene 参数）
+    handleSceneLaunch(options)
   })
 
   onShow(() => {
@@ -192,7 +194,7 @@
 
   async function queryList(page, limit) {
     await new Promise(resolve => setTimeout(resolve, 50))
-    paging.value?.complete([])
+    paging.value?.complete([1])
   }
 
   function loadHistory() {
@@ -289,8 +291,23 @@
   function scanQRCode() {
     uni.scanCode({
       onlyFromCamera: false,
-      scanType: ['qrCode'],
+      scanType: ['qrCode', 'wxCode'],
       success: res => {
+        console.log('res==> ', res)
+
+        // 处理微信小程序码 (WX_CODE)
+        if (res.scanType === 'WX_CODE' || res.path) {
+          const path = res.path || ''
+          const sceneMatch = path.match(/[?&]scene=([^&]+)/)
+          if (sceneMatch && sceneMatch[1]) {
+            handleSceneLaunch({ scene: sceneMatch[1] })
+            return
+          }
+          vk.toast('无效的小程序码')
+          return
+        }
+
+        // 处理普通二维码 (QR_CODE)
         try {
           const data = JSON.parse(res.result)
           if (data.plate && data.phone) {
@@ -326,6 +343,110 @@
         vk.toast('扫码取消')
       },
     })
+  }
+
+  // 处理小程序码扫码进入（scene 参数携带 uid）
+  // scene 格式: uid=xxx 或 uid%3Dxxx（URL编码）
+  async function handleSceneLaunch(options) {
+    let scene = options.scene || ''
+    if (!scene) {
+      // 尝试从 App 启动参数获取
+      try {
+        const launchOptions = uni.getLaunchOptionsSync()
+        scene = launchOptions.query?.scene || ''
+      } catch (e) {
+        // ignore
+      }
+    }
+    if (!scene) return
+
+    // scene 可能是数字类型，转为字符串
+    scene = String(scene)
+
+    // URL 解码（处理 %3D -> = 等情况）
+    try {
+      scene = decodeURIComponent(scene)
+    } catch (e) {
+      // 解码失败，使用原始值
+    }
+
+    // 解析 scene: uid=xxx
+    const uidMatch = scene.match(/uid=([^&]+)/)
+    if (!uidMatch || !uidMatch[1]) return
+
+    const uid = uidMatch[1]
+    vk.showLoading({ title: '查询中...', mask: true })
+
+    try {
+      // 获取该用户的所有车辆列表
+      const res = await vk.callFunction({
+        url: 'client/pub_index.getMyCarList',
+        data: { uid },
+        needAlert: false,
+      })
+
+      vk.hideLoading()
+
+      if (res.code !== 0 || !res.data || !res.data.carList || res.data.carList.length === 0) {
+        vk.toast(res.msg || '未找到该车辆信息')
+        return
+      }
+
+      const carList = res.data.carList
+      const ownerData = res.data
+
+      // 如果只有一辆车，直接进入联系页面
+      if (carList.length === 1) {
+        const car = carList[0]
+        const carData = {
+          plate: car.plate,
+          carDesc: car.carDesc || '',
+          phone: ownerData.phone || '',
+          subPhone: ownerData.subPhone || '',
+          note: ownerData.note || '',
+          ownerName: ownerData.ownerName || '',
+          hidePhone: ownerData.hidePhone || false,
+          pushToken: ownerData.pushToken || '',
+        }
+        const carDataStr = encodeURIComponent(JSON.stringify(carData))
+        vk.navigateTo(`/pages/index/contact?plate=${encodeURIComponent(car.plate)}&type=scan&owner=${carDataStr}`)
+        return
+      }
+
+      // 多辆车，展示选择列表
+      const items = carList.map(car => ({
+        title: car.plate + (car.carDesc ? `（${car.carDesc}）` : '') + (car.isDefault ? ' [默认]' : ''),
+        plate: car.plate,
+        carDesc: car.carDesc || '',
+      }))
+
+      const itemList = items.map(i => i.title)
+      uni.showActionSheet({
+        title: '该用户有多辆车，请选择',
+        itemList: itemList,
+        success: actionRes => {
+          const selected = items[actionRes.tapIndex]
+          const carData = {
+            plate: selected.plate,
+            carDesc: selected.carDesc,
+            phone: ownerData.phone || '',
+            subPhone: ownerData.subPhone || '',
+            note: ownerData.note || '',
+            ownerName: ownerData.ownerName || '',
+            hidePhone: ownerData.hidePhone || false,
+            pushToken: ownerData.pushToken || '',
+          }
+          const carDataStr = encodeURIComponent(JSON.stringify(carData))
+          vk.navigateTo(`/pages/index/contact?plate=${encodeURIComponent(selected.plate)}&type=scan&owner=${carDataStr}`)
+        },
+        fail: () => {
+          // 用户取消选择
+        },
+      })
+    } catch (err) {
+      vk.hideLoading()
+      vk.toast('查询失败，请稍后重试')
+    }
   }
 
   function toMy() {

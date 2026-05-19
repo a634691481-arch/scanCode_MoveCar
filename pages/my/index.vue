@@ -9,7 +9,7 @@
           </view>
         </view>
         <text class="profile-name">{{ form.ownerName || '车主用户' }}</text>
-        <text v-if="hasSaved" class="profile-plate">{{ form.plate }}</text>
+        <text v-if="carList.length > 0" class="profile-plate">已绑定 {{ carList.length }} 辆车</text>
       </view>
 
       <!-- 车辆信息卡片 -->
@@ -19,50 +19,72 @@
             <view class="card-icon">
               <yy-icon name="ri:car-line" size="20" :color="uni.$u.color.primary" />
             </view>
-            <text class="card-title">我的车辆信息</text>
+            <text class="card-title">我的车辆</text>
           </view>
-          <text v-if="hasSaved" class="card-status">
-            <!-- <view class="status-dot"></view> -->
-            <view class="">已保存</view>
+          <text v-if="carList.length > 0" class="card-status">
+            <view class="">已绑定 {{ carList.length }} 辆</view>
           </text>
         </view>
 
-        <!-- 车牌号 -->
-        <view class="form-item">
-          <view class="form-label">
-            <text class="label-text">车牌号码</text>
-            <text class="label-required">*</text>
-          </view>
-          <view class="plate-input-row" @click="showPlateKeyboard">
-            <template v-for="(char, idx) in plateChars" :key="idx">
-              <view v-if="idx === 2" class="plate-separator-dot"></view>
-              <view
-                class="plate-cell"
-                :class="{
-                  'plate-cell-filled': char,
-                  'plate-cell-province': idx === 0,
-                }"
-              >
-                <text class="plate-cell-text">{{ char || '' }}</text>
+        <!-- 车辆列表 -->
+        <view v-for="(car, index) in carList" :key="car._id || car.tempId" class="car-item">
+          <view class="car-item-header">
+            <text class="car-item-title">车辆 {{ index + 1 }}</text>
+            <view class="car-item-actions">
+              <text v-if="car.isDefault" class="car-default-badge">默认</text>
+              <text v-else class="car-set-default" @click="setDefault(index)">设为默认</text>
+              <view class="car-delete-btn" @click="removeCar(index)">
+                <yy-icon name="ri:delete-bin-line" size="14" color="#ef4444" />
               </view>
-            </template>
+            </view>
+          </view>
+
+          <!-- 车牌号 -->
+          <view class="form-item">
+            <view class="form-label">
+              <text class="label-text">车牌号码</text>
+              <text class="label-required">*</text>
+            </view>
+            <view class="plate-input-row" @click="showPlateKeyboard(index)">
+              <template v-for="(char, idx) in getPlateChars(car.plate)" :key="idx">
+                <view v-if="idx === 2" class="plate-separator-dot"></view>
+                <view
+                  class="plate-cell"
+                  :class="{
+                    'plate-cell-filled': char,
+                    'plate-cell-province': idx === 0,
+                  }"
+                >
+                  <text class="plate-cell-text">{{ char || '' }}</text>
+                </view>
+              </template>
+            </view>
+          </view>
+
+          <!-- 车型/颜色（可选） -->
+          <view class="form-item">
+            <view class="form-label">
+              <text class="label-text">车辆描述</text>
+              <text class="label-tip">（可选）</text>
+            </view>
+            <input
+              v-model="car.carDesc"
+              class="form-input"
+              placeholder="例如：白色丰田凯美瑞"
+              placeholder-class="form-placeholder"
+              maxlength="20"
+            />
           </view>
         </view>
 
-        <!-- 车型/颜色（可选） -->
-        <view class="form-item">
-          <view class="form-label">
-            <text class="label-text">车辆描述</text>
-            <text class="label-tip">（可选）</text>
-          </view>
-          <input
-            v-model="form.carDesc"
-            class="form-input"
-            placeholder="例如：白色丰田凯美瑞"
-            placeholder-class="form-placeholder"
-            maxlength="20"
-          />
+        <!-- 添加车辆按钮 -->
+        <view v-if="carList.length < 5" class="add-car-btn" @click="addCar">
+          <yy-icon name="ri:add-line" size="18" :color="uni.$u.color.primary" />
+          <text class="add-car-text">添加车辆</text>
         </view>
+        <text v-else class="add-car-limit">最多可绑定 5 辆车</text>
+
+        <view class="privacy-divider"></view>
 
         <!-- 联系电话 -->
         <view class="form-item">
@@ -253,14 +275,13 @@
     </view>
 
     <!-- 车牌输入键盘组件 -->
-    <yy-plate-keyboard v-model:visible="keyboardVisible" v-model="form.plate" />
+    <yy-plate-keyboard v-model:visible="keyboardVisible" v-model="editingPlate" @change="onPlateChange" />
 
     <!-- 主题选择弹框 -->
     <yy-theme-picker v-model="themePickerVisible" />
   </yy-paging>
 </template>
 
-console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
 <script setup>
   // ====== yy-paging 配置 ======
   const pagingConfig = ref({
@@ -286,6 +307,8 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
   const keyboardVisible = ref(false)
   const themePickerVisible = ref(false)
   const tokenExpanded = ref(true)
+  const editingCarIndex = ref(-1)
+  const editingPlate = ref('')
 
   const defaultNote = '您好，我的车临时停在此处，如有妨碍请随时联系我，谢谢！'
 
@@ -297,9 +320,11 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
     '紧急停车，如有妨碍请电话联系，马上处理。',
   ]
 
+  // 车辆列表（多辆车）
+  const carList = ref([])
+
+  // 用户联系信息（所有车辆共享）
   const form = ref({
-    plate: '',
-    carDesc: '',
     phone: '',
     subPhone: '',
     note: defaultNote,
@@ -309,16 +334,11 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
     pushToken: '',
   })
 
-  const hasSaved = ref(false)
-
-  const plateChars = computed(() => {
-    const chars = form.value.plate.split('')
-    while (chars.length < 8) chars.push('')
-    return chars
-  })
+  const hasSaved = computed(() => carList.value.length > 0 && carList.value.some(c => c.plate && c.plate.length >= 7))
 
   const canSave = computed(() => {
-    return form.value.plate.length >= 7 && /^1[3-9]\d{9}$/.test(form.value.phone)
+    const hasValidCar = carList.value.some(car => car.plate && car.plate.length >= 7)
+    return hasValidCar && /^1[3-9]\d{9}$/.test(form.value.phone)
   })
 
   const profileSectionStyle = computed(() => ({
@@ -371,45 +391,144 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
     paging.value?.complete([])
   }
 
+  function getPlateChars(plate) {
+    const chars = (plate || '').split('')
+    while (chars.length < 8) chars.push('')
+    return chars
+  }
+
+  function generateTempId() {
+    return 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+  }
+
+  function addCar() {
+    if (carList.value.length >= 5) {
+      vk.toast('最多可绑定 5 辆车')
+      return
+    }
+    carList.value.push({
+      _id: '',
+      tempId: generateTempId(),
+      plate: '',
+      carDesc: '',
+      isDefault: carList.value.length === 0,
+    })
+  }
+
+  function removeCar(index) {
+    vk.confirm({
+      title: '删除车辆',
+      content: `确定要删除这辆车${carList.value[index].plate ? '（' + carList.value[index].plate + '）' : ''}吗？`,
+      confirmText: '删除',
+      cancelText: '取消',
+      success: res => {
+        if (res.confirm) {
+          const removed = carList.value.splice(index, 1)[0]
+          // 如果删除的是默认车辆，重新设置默认
+          if (removed.isDefault && carList.value.length > 0) {
+            carList.value[0].isDefault = true
+          }
+        }
+      },
+    })
+  }
+
+  function setDefault(index) {
+    carList.value.forEach((car, i) => {
+      car.isDefault = i === index
+    })
+  }
+
+  function showPlateKeyboard(index) {
+    editingCarIndex.value = index
+    editingPlate.value = carList.value[index].plate || ''
+    keyboardVisible.value = true
+  }
+
+  function onPlateChange(newPlate) {
+    if (editingCarIndex.value >= 0 && editingCarIndex.value < carList.value.length) {
+      carList.value[editingCarIndex.value].plate = newPlate
+    }
+  }
+
   async function loadInfo() {
     const uid = vk.getStorageSync('uni_id_token')
     if (!uid) {
-      hasSaved.value = false
+      carList.value = []
       return
     }
     try {
       const res = await vk.callFunction({
-        url: 'client/pub_index.getMyCarInfo',
+        url: 'client/pub_index.getMyCarList',
         data: { uid },
         needAlert: false,
       })
 
       if (res.code === 0 && res.data) {
-        form.value = { ...form.value, ...res.data }
-        hasSaved.value = true
-        vk.setStorageSync('my_car_plate', res.data.plate)
+        // 加载车辆列表
+        if (res.data.carList && res.data.carList.length > 0) {
+          carList.value = res.data.carList.map(car => ({
+            _id: car._id || '',
+            tempId: '',
+            plate: car.plate || '',
+            carDesc: car.carDesc || '',
+            isDefault: car.isDefault || false,
+          }))
+        } else {
+          carList.value = []
+        }
+
+        // 加载用户联系信息
+        form.value = {
+          phone: res.data.phone || '',
+          subPhone: res.data.subPhone || '',
+          note: res.data.note || defaultNote,
+          ownerName: res.data.ownerName || '',
+          hidePhone: res.data.hidePhone || false,
+          receiveNotify: res.data.receiveNotify !== false,
+          pushToken: res.data.pushToken || '',
+        }
+
+        // 缓存默认车牌
+        const defaultCar = carList.value.find(c => c.isDefault) || carList.value[0]
+        if (defaultCar && defaultCar.plate) {
+          vk.setStorageSync('my_car_plate', defaultCar.plate)
+        }
       } else {
-        hasSaved.value = false
+        carList.value = []
       }
     } catch (err) {
-      hasSaved.value = false
+      carList.value = []
     }
-  }
-
-  function showPlateKeyboard() {
-    keyboardVisible.value = true
   }
 
   async function saveInfo() {
     if (!canSave.value) {
-      if (form.value.plate.length < 7) {
-        vk.toast('请输入完整车牌号')
+      if (!carList.value.some(car => car.plate && car.plate.length >= 7)) {
+        vk.toast('请至少输入一辆车的完整车牌号')
         return
       }
       if (!/^1[3-9]\d{9}$/.test(form.value.phone)) {
         vk.toast('请输入正确的手机号')
         return
       }
+    }
+
+    // 检查所有车牌是否完整
+    for (let i = 0; i < carList.value.length; i++) {
+      const car = carList.value[i]
+      if (car.plate && car.plate.length > 0 && car.plate.length < 7) {
+        vk.toast(`车辆 ${i + 1} 的车牌号不完整`)
+        return
+      }
+    }
+
+    // 检查车牌重复
+    const plates = carList.value.filter(car => car.plate).map(car => car.plate.toUpperCase())
+    const uniquePlates = [...new Set(plates)]
+    if (plates.length !== uniquePlates.length) {
+      vk.toast('车牌号不能重复')
+      return
     }
 
     vk.showLoading({ title: '保存中...', mask: true })
@@ -423,11 +542,15 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
       }
 
       const res = await vk.callFunction({
-        url: 'client/pub_index.saveCarInfo',
+        url: 'client/pub_index.saveCarList',
         data: {
           uid,
-          plate: form.value.plate,
-          carDesc: form.value.carDesc,
+          carList: carList.value.map(car => ({
+            _id: car._id || undefined,
+            plate: car.plate,
+            carDesc: car.carDesc,
+            isDefault: car.isDefault,
+          })),
           phone: form.value.phone,
           subPhone: form.value.subPhone,
           note: form.value.note,
@@ -442,8 +565,19 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
       vk.hideLoading()
 
       if (res.code === 0) {
-        hasSaved.value = true
-        vk.setStorageSync('my_car_plate', form.value.plate)
+        // 更新本地车辆ID
+        if (res.data && res.data.carIds) {
+          res.data.carIds.forEach((id, idx) => {
+            if (carList.value[idx]) {
+              carList.value[idx]._id = id
+              carList.value[idx].tempId = ''
+            }
+          })
+        }
+        const defaultCar = carList.value.find(c => c.isDefault) || carList.value[0]
+        if (defaultCar && defaultCar.plate) {
+          vk.setStorageSync('my_car_plate', defaultCar.plate)
+        }
         vk.toast(res.msg || '保存成功')
       } else {
         vk.toast(res.msg || '保存失败')
@@ -451,7 +585,7 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
     } catch (err) {
       console.log('err==> ', err)
       vk.hideLoading()
-      vk.toast(err.msg)
+      vk.toast(err.msg || '保存失败')
     }
   }
 
@@ -491,7 +625,12 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
   }
 
   function showAbout() {
-    vk.alert('一款便捷的挪车工具，帮助您快速联系车主或被联系，让出行更高效。\n\n版本：v1.0.0', '关于挪车助手', '我知道了')
+    //
+    vk.alert(
+      '一款便捷的挪车工具，帮助您快速联系车主或被联系，让出行更高效。\n\n版本：v1.0.0   \n\n作者微信：YovoeL--0326',
+      '关于挪车助手',
+      '我知道了',
+    )
   }
 
   function showThemePicker() {
@@ -525,9 +664,8 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
             vk.removeStorageSync('my_car_plate')
 
             // 重置表单状态
+            carList.value = []
             form.value = {
-              plate: '',
-              carDesc: '',
               phone: '',
               subPhone: '',
               note: defaultNote,
@@ -536,7 +674,6 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
               receiveNotify: true,
               pushToken: '',
             }
-            hasSaved.value = false
 
             vk.toast('已退出登录')
 
@@ -598,12 +735,6 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
     letter-spacing: 2px;
   }
 
-  .profile-stat {
-    margin-top: 4px;
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.85);
-  }
-
   /* 信息卡片 */
   .info-card {
     margin: 16px 16px 0;
@@ -650,19 +781,110 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
     color: #16a34a;
   }
 
-  .status-dot {
-    width: 6px;
-    height: 6px;
-    background: #16a34a;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 1px;
+  /* 车辆条目 */
+  .car-item {
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .car-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .car-item-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .car-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .car-default-badge {
+    font-size: 11px;
+    color: var(--u-type-primary);
+    background: var(--u-type-primary-light);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    border: 1px solid var(--u-type-primary-disabled);
+  }
+
+  .car-set-default {
+    font-size: 11px;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  .car-delete-btn {
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+
+    &:active {
+      background: #fee2e2;
+    }
+  }
+
+  /* 添加车辆按钮 */
+  .add-car-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1.5px dashed var(--u-type-primary);
+    margin-bottom: 12px;
+
+    &:active {
+      background: var(--u-type-primary-light);
+    }
+  }
+
+  .add-car-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--u-type-primary);
+  }
+
+  .add-car-limit {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    color: #9ca3af;
+    margin-bottom: 12px;
   }
 
   /* 表单 */
   .form-item {
     margin-bottom: 16px;
     position: relative;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 
   .form-label {
@@ -692,7 +914,7 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
     width: 100%;
     height: 44px;
     padding: 0 14px;
-    background: #f9fafb;
+    background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     font-size: 14px;
@@ -763,7 +985,7 @@ console.log("🚀 ~ :252 ~ saveInfo ~ err:", err);
     align-items: center;
     gap: 4px;
     padding: 10px;
-    background: #f9fafb;
+    background: #ffffff;
     border-radius: 12px;
     border: 1px solid #e5e7eb;
     justify-content: center;

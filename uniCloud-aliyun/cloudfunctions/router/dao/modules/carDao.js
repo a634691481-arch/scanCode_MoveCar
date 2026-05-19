@@ -11,7 +11,15 @@ class CarDao extends BaseDao {
   }
 
   async findByUserId(userId) {
-    return await this.findByWhereJson({ user_id: userId });
+    return await this.findByWhereJson({ uid: userId });
+  }
+
+  async findByUserIdWithList(userId) {
+    return await this.select({
+      whereJson: { uid: userId },
+      pageSize: -1,
+      sortArr: [{ name: 'isDefault', type: 'desc' }, { name: '_add_time', type: 'desc' }],
+    });
   }
 }
 

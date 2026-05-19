@@ -46,6 +46,11 @@
         <!-- 字母数字键盘 -->
         <template v-else>
           <view class="keyboard-row">
+            <view v-for="k in keyboardNums" :key="k" class="key-btn" @click="onInput(k)">
+              <text class="key-text">{{ k }}</text>
+            </view>
+          </view>
+          <view class="keyboard-row">
             <view v-for="k in keyboardRow1" :key="k" class="key-btn" @click="onInput(k)">
               <text class="key-text">{{ k }}</text>
             </view>
@@ -67,11 +72,6 @@
             </view>
             <view class="key-btn key-btn-delete" @click="onDelete">
               <yy-icon name="ri:delete-back-2-line" size="18" color="#374151" />
-            </view>
-          </view>
-          <view class="keyboard-row">
-            <view v-for="k in keyboardNums" :key="k" class="key-btn" @click="onInput(k)">
-              <text class="key-text">{{ k }}</text>
             </view>
           </view>
         </template>

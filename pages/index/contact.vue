@@ -85,15 +85,26 @@
           <yy-icon name="ri:arrow-right-s-line" size="20" color="#ffffff" />
         </view>
 
-        <view v-if="ownerInfo.pushToken" class="action-btn action-btn-notify" @click="sendNotify">
+        <view
+          v-if="ownerInfo.pushToken"
+          class="action-btn action-btn-notify"
+          :class="{ 'action-btn-disabled': notifyCountdown > 0 }"
+          @click="sendNotify"
+        >
           <view class="action-icon-wrap" style="background: #dbeafe">
-            <yy-icon name="ri:notification-3-fill" size="24" :color="uni.$u.color.primary" />
+            <yy-icon
+              name="ri:notification-3-fill"
+              size="24"
+              :color="notifyCountdown > 0 ? '#9ca3af' : uni.$u.color.primary"
+            />
           </view>
           <view class="action-text-group">
-            <text class="action-title-dark">发送挪车通知</text>
+            <text class="action-title-dark" :class="{ 'action-title-disabled': notifyCountdown > 0 }">
+              {{ notifyCountdown > 0 ? `已发送（${notifyCountdown}s）` : '发送挪车通知' }}
+            </text>
             <text class="action-subtitle-dark">通过公众号推送消息给车主</text>
           </view>
-          <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
+          <yy-icon v-if="notifyCountdown === 0" name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
         </view>
       </view>
 
@@ -148,6 +159,10 @@
     hidePhone: false,
     pushToken: '',
   })
+
+  // 发送通知倒计时（防重复点击）
+  const notifyCountdown = ref(0)
+  let notifyTimer = null
 
   const displayPhone = computed(() => {
     if (!ownerInfo.value.phone) return ''
@@ -250,12 +265,20 @@
   }
 
   async function sendNotify() {
+    // 倒计时期间禁止点击
+    if (notifyCountdown.value > 0) {
+      vk.toast(`请等待 ${notifyCountdown.value} 秒后再发送`)
+      return
+    }
+
     const token = ownerInfo.value.pushToken
     if (!token) {
       vk.toast('该车主未配置推送通道')
       return
     }
+
     vk.showLoading({ title: '发送中...', mask: true })
+
     try {
       const res = await vk.callFunction({
         url: 'client/pub_index.sendMoveCarNotify',
@@ -266,9 +289,11 @@
         needAlert: false,
       })
       vk.hideLoading()
+
       if (res.code === 0) {
         vk.toast('通知已发送')
         await addContactRecord('notify')
+        startNotifyCountdown()
       } else {
         vk.toast(res.msg || '发送失败')
       }
@@ -277,6 +302,28 @@
       vk.toast('发送失败，请稍后重试')
     }
   }
+
+  // 启动发送通知倒计时（60秒）
+  function startNotifyCountdown() {
+    notifyCountdown.value = 8
+    if (notifyTimer) {
+      clearInterval(notifyTimer)
+    }
+    notifyTimer = setInterval(() => {
+      notifyCountdown.value--
+      if (notifyCountdown.value <= 0) {
+        clearInterval(notifyTimer)
+        notifyTimer = null
+      }
+    }, 1000)
+  }
+
+  onUnload(() => {
+    if (notifyTimer) {
+      clearInterval(notifyTimer)
+      notifyTimer = null
+    }
+  })
 
   function goBack() {
     vk.navigateBack({ fail: () => vk.navigateTo('/pages/index/index') })
@@ -579,6 +626,12 @@
     background: #ffffff;
     border: 1px solid #e5e7eb;
     margin-bottom: 0;
+
+    &.action-btn-disabled {
+      opacity: 0.6;
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+    }
   }
 
   .action-icon-wrap {
@@ -608,6 +661,10 @@
     font-weight: 600;
     color: #1f2937;
     margin-bottom: 2px;
+
+    &.action-title-disabled {
+      color: #9ca3af;
+    }
   }
 
   .action-subtitle {
