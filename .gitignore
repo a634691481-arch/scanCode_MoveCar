@@ -24,6 +24,9 @@ dist/
 *.exe
 *.dmg
 
+# 微信小程序上传密钥
+scripts/private/
+
 
 
 

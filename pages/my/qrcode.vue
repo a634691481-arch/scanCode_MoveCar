@@ -87,7 +87,7 @@
               <view class="step-num" :style="stepNumStyle">2</view>
               <view class="step-content">
                 <text class="step-title">打印并裁剪</text>
-                <text class="step-desc">到打印店打印成10x10cm贴纸，或自行裁剪</text>
+                <text class="step-desc">到打印店打印成1100x600cm贴纸，或自行裁剪</text>
               </view>
             </view>
             <view class="guide-step">
@@ -150,9 +150,9 @@
   const qrBase64 = ref('')
   const posterImagePath = ref('')
 
-  // canvas 尺寸 (横版高清海报，类似70x40mm比例)
-  const canvasWidth = ref(900)
-  const canvasHeight = ref(520)
+  // canvas 尺寸 (横版海报 11:6 比例，1100x600 高清)
+  const canvasWidth = ref(1100)
+  const canvasHeight = ref(600)
 
   const currentCar = computed(() => {
     return carList.value[currentIndex.value] || {}
@@ -321,19 +321,23 @@
       ctx.setFillStyle('#1a1a2e')
       ctx.fillRect(0, 0, W, H)
 
-      // 2. 顶部主题色装饰条
+      // 2. 四周主题色装饰边框
+      const borderWidth = 14
       ctx.setFillStyle(primaryColor)
-      ctx.fillRect(0, 0, W, 8)
+      ctx.fillRect(0, 0, W, borderWidth)
+      ctx.fillRect(0, H - borderWidth, W, borderWidth)
+      ctx.fillRect(0, 0, borderWidth, H)
+      ctx.fillRect(W - borderWidth, 0, borderWidth, H)
 
       // 3. 左侧二维码白色背景区域（垂直居中）
-      const qrAreaX = 40
-      const qrAreaSize = 380
+      const qrAreaX = 50
+      const qrAreaSize = 460
       const qrAreaY = (H - qrAreaSize) / 2
 
       ctx.setFillStyle('#ffffff')
       ctx.beginPath()
       if (ctx.roundRect) {
-        ctx.roundRect(qrAreaX, qrAreaY, qrAreaSize, qrAreaSize, 16)
+        ctx.roundRect(qrAreaX, qrAreaY, qrAreaSize, qrAreaSize, 20)
       } else {
         ctx.rect(qrAreaX, qrAreaY, qrAreaSize, qrAreaSize)
       }
@@ -347,7 +351,7 @@
 
         try {
           fs.writeFileSync(filePath, base64Data, 'base64')
-          const qrPadding = 30
+          const qrPadding = 36
           ctx.drawImage(
             filePath,
             qrAreaX + qrPadding,
@@ -357,58 +361,58 @@
           )
         } catch (e) {
           ctx.setFillStyle('#e5e7eb')
-          ctx.fillRect(qrAreaX + 30, qrAreaY + 30, qrAreaSize - 60, qrAreaSize - 60)
+          ctx.fillRect(qrAreaX + 36, qrAreaY + 36, qrAreaSize - 72, qrAreaSize - 72)
         }
       }
 
       // 5. 右侧内容区（垂直居中）
-      const rightX = qrAreaX + qrAreaSize + 40
-      const rightW = W - rightX - 40
+      const rightX = qrAreaX + qrAreaSize + 50
+      const rightW = W - rightX - 50
       const rightCenterX = rightX + rightW / 2
       const contentCenterY = H / 2
 
       // 主标题
       ctx.setFillStyle('#ffffff')
-      ctx.setFontSize(44)
+      ctx.setFontSize(54)
       ctx.setTextAlign('center')
-      ctx.fillText('微信扫码', rightCenterX, contentCenterY - 90)
+      ctx.fillText('微信扫码', rightCenterX, contentCenterY - 100)
 
       // 副标题
       ctx.setFillStyle(primaryColor)
-      ctx.setFontSize(44)
-      ctx.fillText('呼叫车主', rightCenterX, contentCenterY - 30)
+      ctx.setFontSize(54)
+      ctx.fillText('呼叫车主', rightCenterX, contentCenterY - 32)
 
       // 分隔线
       ctx.setStrokeStyle('rgba(255,255,255,0.15)')
       ctx.setLineWidth(1)
       ctx.beginPath()
-      ctx.moveTo(rightX + 30, contentCenterY + 10)
-      ctx.lineTo(W - 70, contentCenterY + 10)
+      ctx.moveTo(rightX + 40, contentCenterY + 14)
+      ctx.lineTo(W - 90, contentCenterY + 14)
       ctx.stroke()
 
       // 标签
-      const tagY = contentCenterY + 40
+      const tagY = contentCenterY + 48
       const tagText = '隐私通话 · 快速联系'
-      const tagW = 260
-      const tagH = 42
+      const tagW = 300
+      const tagH = 50
       const tagX = rightCenterX - tagW / 2
       ctx.setFillStyle(primaryColor)
       ctx.beginPath()
       if (ctx.roundRect) {
-        ctx.roundRect(tagX, tagY, tagW, tagH, 21)
+        ctx.roundRect(tagX, tagY, tagW, tagH, 25)
       } else {
         ctx.rect(tagX, tagY, tagW, tagH)
       }
       ctx.fill()
       ctx.setFillStyle('#ffffff')
-      ctx.setFontSize(18)
-      ctx.fillText(tagText, rightCenterX, tagY + 28)
+      ctx.setFontSize(20)
+      ctx.fillText(tagText, rightCenterX, tagY + 34)
 
       // 底部提示
       ctx.setFillStyle('rgba(255,255,255,0.45)')
-      ctx.setFontSize(14)
+      ctx.setFontSize(16)
       ctx.setTextAlign('center')
-      ctx.fillText('请贴在车窗明显位置', rightCenterX, contentCenterY + 120)
+      ctx.fillText('请贴在车窗明显位置', rightCenterX, contentCenterY + 140)
 
       ctx.draw(false, () => {
         setTimeout(() => {

@@ -2,8 +2,8 @@
     "name" : "挪车助手",
     "appid" : "__UNI__CA8E78B",
     "description" : "便捷的挪车助手工具，输入车牌号或扫码即可联系车主，设置自己的车辆信息生成专属挪车码，让挪车沟通更高效。",
-    "versionName" : "1.0.5",
-    "versionCode" : 5,
+    "versionName" : "0.0.2",
+    "versionCode" : 13,
     "transformPx" : false,
     "app-plus" : {
         "confusion" : {
@@ -195,7 +195,7 @@
     "mp-weixin" : {
         "appid" : "wxcffe1f07c0a88871",
         "setting" : {
-            "urlCheck" : false,
+            "urlCheck" : true,
             "es6" : true,
             "postcss" : true,
             "minified" : true,

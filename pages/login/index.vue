@@ -9,7 +9,7 @@
     ></view>
 
     <!-- 内容区 -->
-    <view class="relative z-10 flex flex-col flex-1 p-6">
+    <view class="relative z-10 flex flex-col flex-1 p-6 pt-16">
       <!-- 品牌 Logo -->
       <view class="flex flex-col items-center gap-4 my-8">
         <view
@@ -68,31 +68,24 @@
     </view>
 
     <!-- 底部固定按钮 -->
-    <view class="fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-gray-100">
-      <view class="flex flex-col gap-3 p-4">
-        <u-button
-          type="primary"
-          shape="circle"
-          :custom-style="{ height: '46px' }"
-          ripple
-          :loading="loginLoading"
-          :disabled="loginLoading"
-          class="w-[88%]"
-          @click="onLogin"
-        >
-          <view class="flex items-center justify-center gap-2">
-            <yy-icon class="flex-shrink-0 leading-none" name="ri:login-circle-line" size="18" color="#ffffff" />
-            <text class="text-sm font-medium">{{ loginLoadingText }}</text>
-          </view>
-        </u-button>
-      </view>
-    </view>
+    <yy-fixed-bottom
+      :text="loginLoadingText"
+      icon="ri:login-circle-line"
+      :disabled="loginLoading"
+      :btn-style="loginBtnStyle"
+      @click="onLogin"
+    />
   </view>
 </template>
 
 <script setup>
   const loginLoading = ref(false)
   const loginLoadingText = ref('立即登录')
+
+  const loginBtnStyle = computed(() => ({
+    background: `linear-gradient(135deg, ${uni.$u.color.primary}, ${uni.$u.color.primaryDark})`,
+    boxShadow: `0 6px 16px ${uni.$u.color.primary}4d`,
+  }))
 
   // 点击登录按钮
   function onLogin() {

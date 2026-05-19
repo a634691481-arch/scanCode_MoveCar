@@ -6,10 +6,16 @@
   "keywords": [],
   "main": "main.js",
   "devDependencies": {
+    "@babel/helper-compilation-targets": "7.22.6",
     "@uni-ku/root": "^1.4.1",
     "autoprefixer": "^10.4.21",
+    "boxen": "^5.1.2",
     "chalk": "^4.1.2",
     "code-inspector-plugin": "^0.20.12",
+    "figures": "^3.2.0",
+    "iconv-lite": "^0.7.2",
+    "lru-cache": "^6.0.0",
+    "miniprogram-ci": "^2.1.31",
     "ora": "^5.4.1",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
@@ -17,7 +23,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "weapp-tw patch"
+    "postinstall": "weapp-tw patch",
+    "upload": "node scripts/upload.js"
   },
   "author": "VK",
   "license": "MIT",

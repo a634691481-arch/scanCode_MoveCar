@@ -2,7 +2,7 @@
   <yy-paging v-model="state.dataList" @query="queryList" ref="paging" @scroll="scroll" v-bind="pagingConfig">
     <view class="flex flex-col gap-3 p-3">
       <!-- 反馈类型 -->
-      <view class="rounded-2xl flex-col gap-3 p-4 bg-white shadow-sm">
+      <view class="rounded-2xl flex flex-col gap-2 p-4 bg-white shadow-sm">
         <text class="text-sm font-semibold text-gray-900">反馈类型</text>
         <view class="flex flex-wrap gap-2">
           <view
@@ -24,11 +24,11 @@
       </view>
 
       <!-- 反馈内容 -->
-      <view class="rounded-2xl flex-col gap-3 p-4 bg-white shadow-sm">
-        <text class="text-sm font-semibold text-gray-900">反馈内容</text>
+      <view class="rounded-2xl flex flex-col gap-2 p-4 bg-white shadow-sm">
+        <text class="pb-1 text-sm font-semibold text-gray-900">反馈内容</text>
         <textarea
           v-model="form.content"
-          class="min-h-36 bg-gray-50 rounded-xl w-full p-3 text-sm leading-relaxed text-gray-900"
+          class="min-h-36 bg-gray-50 rounded-xl box-border w-full p-3 text-sm leading-relaxed text-gray-900"
           placeholder="请详细描述您遇到的问题或建议，我们会尽快处理..."
           placeholder-class="text-sm text-gray-400"
           maxlength="500"
@@ -38,11 +38,11 @@
       </view>
 
       <!-- 联系方式 -->
-      <view class="rounded-2xl flex-col gap-3 p-4 bg-white shadow-sm">
-        <text class="text-sm font-semibold text-gray-900">联系方式（选填）</text>
+      <view class="rounded-2xl flex flex-col gap-2 p-4 bg-white shadow-sm">
+        <text class="pb-1 text-sm font-semibold text-gray-900">联系方式（选填）</text>
         <input
           v-model="form.contact"
-          class="bg-gray-50 rounded-xl w-full h-12 px-3 text-sm text-gray-900"
+          class="bg-gray-50 rounded-xl box-border w-full h-12 px-3 text-sm text-gray-900"
           placeholder="手机号或微信号，方便我们联系您"
           placeholder-class="text-sm text-gray-400"
           maxlength="50"
