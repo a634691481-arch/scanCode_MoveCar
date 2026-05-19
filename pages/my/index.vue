@@ -253,6 +253,17 @@
           <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
         </view>
 
+        <view class="menu-item" @click="toFeedback">
+          <view class="menu-icon" style="background: #fef3c7">
+            <yy-icon name="ri:feedback-line" size="20" color="#d97706" />
+          </view>
+          <view class="menu-content">
+            <text class="menu-label">用户反馈</text>
+            <text class="menu-desc">意见建议、问题反馈</text>
+          </view>
+          <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
+        </view>
+
         <view class="menu-item" @click="showAbout">
           <view class="menu-icon" style="background: #faf5ff">
             <yy-icon name="ri:information-line" size="20" color="#9333ea" />
@@ -622,6 +633,10 @@
         vk.toast('分享失败')
       },
     })
+  }
+
+  function toFeedback() {
+    vk.navigateTo('/pages/my/feedback')
   }
 
   function showAbout() {
