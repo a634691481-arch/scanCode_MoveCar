@@ -2,7 +2,7 @@ const ci = require('miniprogram-ci')
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
-const { spawn } = require('child_process')
+const { spawn, execSync } = require('child_process')
 const chalk = require('chalk')
 const ora = require('ora')
 const boxen = require('boxen')
@@ -31,6 +31,20 @@ const UPLOAD_CONFIG = {
   robot: 1,
   // 上传线程数
   threads: 8,
+}
+
+// ====== 获取开发者名称 ======
+function getDeveloperName() {
+  // 优先级：Git用户名 > 系统用户名
+  try {
+    const gitName = execSync('git config user.name', { encoding: 'utf-8', cwd: ROOT }).trim()
+    if (gitName) return gitName
+  } catch {}
+  try {
+    return os.userInfo().username || 'developer'
+  } catch {
+    return 'developer'
+  }
 }
 
 // ====== 工具函数 ======
@@ -164,7 +178,8 @@ async function main() {
     fatal(`密钥文件不存在\n  ${chalk.gray('请放入:')} scripts/private/private.${appid}.key`)
   }
 
-  const desc = process.argv[2] || `v${version} ${new Date().toLocaleString('zh-CN')}`
+  const developer = getDeveloperName()
+  const desc = process.argv[2] || `${developer} 提交 v${version} ${new Date().toLocaleString('zh-CN')}`
   const skipBuild = process.argv.includes('--skip-build')
 
   // Step 1: 构建
@@ -203,9 +218,10 @@ async function main() {
   console.log(
     boxen(
       [
-        `${chalk.bold('AppID')}   ${chalk.cyan(appid)}`,
-        `${chalk.bold('版本')}    ${chalk.cyan(version)}`,
-        `${chalk.bold('描述')}    ${chalk.white(desc)}`,
+        `${chalk.bold('AppID')}     ${chalk.cyan(appid)}`,
+        `${chalk.bold('版本')}      ${chalk.cyan(version)}`,
+        `${chalk.bold('开发者')}    ${chalk.cyan(developer)}`,
+        `${chalk.bold('描述')}      ${chalk.white(desc)}`,
       ].join('\n'),
       {
         padding: { left: 1, right: 1, top: 0, bottom: 0 },
