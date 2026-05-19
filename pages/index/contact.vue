@@ -75,7 +75,7 @@
         <text class="action-section-title">选择联系方式</text>
 
         <view class="action-btn action-btn-call" :style="actionBtnCallStyle" @click="callPhone">
-          <view class="action-icon-wrap" style="background: rgba(255,255,255,0.2);">
+          <view class="action-icon-wrap" style="background: rgba(255, 255, 255, 0.2)">
             <yy-icon name="ri:phone-fill" size="24" color="#ffffff" />
           </view>
           <view class="action-text-group">
@@ -86,7 +86,7 @@
         </view>
 
         <view v-if="ownerInfo.pushToken" class="action-btn action-btn-notify" @click="sendNotify">
-          <view class="action-icon-wrap" style="background: #dbeafe;">
+          <view class="action-icon-wrap" style="background: #dbeafe">
             <yy-icon name="ri:notification-3-fill" size="24" :color="uni.$u.color.primary" />
           </view>
           <view class="action-text-group">
@@ -95,7 +95,6 @@
           </view>
           <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
         </view>
-
       </view>
 
       <!-- 文明提示 -->
@@ -103,11 +102,13 @@
         <yy-icon name="ri:error-warning-line" size="18" color="#d97706" />
         <view class="warning-content">
           <text class="warning-title">温馨提示</text>
-          <text class="warning-text">请文明用语，理解车主可能因临时情况无法立即响应。如车辆紧急情况严重影响通行，可拨打 122 报警电话。</text>
+          <text class="warning-text">
+            请文明用语，理解车主可能因临时情况无法立即响应。如车辆紧急情况严重影响通行，可拨打 122 报警电话。
+          </text>
         </view>
       </view>
 
-      <view style="height: 40rpx;"></view>
+      <view style="height: 40rpx"></view>
     </view>
   </yy-paging>
 </template>
@@ -157,7 +158,7 @@
   })
 
   const plateShowSectionStyle = computed(() => ({
-    background: `linear-gradient(135deg, ${uni.$u.color.primary} 0%, ${uni.$u.color.primaryDark} 60%, ${uni.$u.color.primary} 100%)`,
+    background: `linear-gradient(135deg, ${uni.$u.color.primary} 0%, ${uni.$u.color.primary} 60%, ${uni.$u.color.primary} 100%)`,
   }))
 
   const plateShowCardStyle = computed(() => ({
@@ -223,7 +224,7 @@
         content: `主号：${phone}\n副号：${subPhone}`,
         confirmText: '拨打主号',
         cancelText: '拨打副号',
-        success: (res) => {
+        success: res => {
           if (res.confirm) {
             uni.makePhoneCall({ phoneNumber: phone, fail: () => {} })
           } else {
@@ -310,8 +311,13 @@
   }
 
   @keyframes shine {
-    0%, 100% { left: -50%; }
-    50% { left: 100%; }
+    0%,
+    100% {
+      left: -50%;
+    }
+    50% {
+      left: 100%;
+    }
   }
 
   .plate-content {
@@ -377,7 +383,9 @@
   }
 
   @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .status-text {
@@ -432,7 +440,9 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    &:active { opacity: 0.85; }
+    &:active {
+      opacity: 0.85;
+    }
   }
 
   .empty-btn-text {
@@ -544,7 +554,10 @@
     padding: 16px;
     border-radius: 14px;
     margin-bottom: 12px;
-    &:active { opacity: 0.9; transform: scale(0.99); }
+    &:active {
+      opacity: 0.9;
+      transform: scale(0.99);
+    }
   }
 
   .action-btn-call {
@@ -672,7 +685,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    &:active { opacity: 0.9; }
+    &:active {
+      opacity: 0.9;
+    }
   }
 
   .template-confirm-text {

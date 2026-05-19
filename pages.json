@@ -77,11 +77,11 @@
 		"navigationBarTextStyle": "@navTxtStyle",
 		"navigationBarTitleText": "挪车助手",
 		"navigationStyle": "custom"
-	},
-	"tabBar": {
-		"color": "@tabFontColor",
-		"selectedColor": "@tabSelectedColor",
-		"backgroundColor": "@tabBgColor",
-		"borderStyle": "@tabBorderStyle"
 	}
+	// "tabBar": {
+	// 	"color": "@tabFontColor",
+	// 	"selectedColor": "@tabSelectedColor",
+	// 	"backgroundColor": "@tabBgColor",
+	// 	"borderStyle": "@tabBorderStyle"
+	// }
 }

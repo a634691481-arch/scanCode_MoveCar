@@ -86,15 +86,15 @@ const cloudObject = {
 
 	getMyCarInfo: async function(data) {
 		let res = { code: 0, msg: '' };
-		let { plate } = data;
+		let { uid } = data;
 
-		if (!plate) {
-			return { code: -1, msg: '车牌号不能为空' };
+		if (!uid) {
+			return { code: -1, msg: '用户未登录' };
 		}
 
 		let carInfo = await vk.baseDao.findByWhereJson({
 			dbName: DB_NAME,
-			whereJson: { plate: plate.toUpperCase() }
+			whereJson: { uid }
 		});
 
 		if (!carInfo) {
@@ -120,9 +120,11 @@ const cloudObject = {
 
 	saveCarInfo: async function(data) {
 		let res = { code: 0, msg: '' };
-		let { plate, phone, subPhone, carDesc, note, ownerName, hidePhone, allowVoiceCall, receiveNotify, pushToken } = data;
+		let { uid, plate, phone, subPhone, carDesc, note, ownerName, hidePhone, allowVoiceCall, receiveNotify, pushToken } = data;
 
-
+		if (!uid) {
+			return { code: -1, msg: '用户未登录' };
+		}
 		if (!plate || plate.length < 7) {
 			return { code: -1, msg: '请输入完整的车牌号' };
 		}
@@ -132,12 +134,24 @@ const cloudObject = {
 
 		plate = plate.toUpperCase();
 
+		// 查询当前用户是否已有车辆记录
+		let myCar = await vk.baseDao.findByWhereJson({
+			dbName: DB_NAME,
+			whereJson: { uid }
+		});
+
+		// 查询该车牌是否已被其他用户绑定
 		let plateOwner = await vk.baseDao.findByWhereJson({
 			dbName: DB_NAME,
 			whereJson: { plate }
 		});
 
+		if (plateOwner && plateOwner.uid !== uid) {
+			return { code: -1, msg: '该车牌号已被其他用户绑定' };
+		}
+
 		let dataJson = {
+			uid,
 			plate,
 			phone,
 			subPhone: subPhone || '',
@@ -149,10 +163,10 @@ const cloudObject = {
 			pushToken: pushToken || '',
 		};
 
-		if (plateOwner) {
+		if (myCar) {
 			await vk.baseDao.updateById({
 				dbName: DB_NAME,
-				id: plateOwner._id,
+				id: myCar._id,
 				dataJson,
 			});
 			res.msg = '更新成功';
@@ -170,21 +184,21 @@ const cloudObject = {
 
 	deleteCarInfo: async function(data) {
 		let res = { code: 0, msg: '' };
-		let { plate } = data;
+		let { uid } = data;
 
-		if (!plate) {
-			return { code: -1, msg: '车牌号不能为空' };
+		if (!uid) {
+			return { code: -1, msg: '用户未登录' };
 		}
 
-		let plateOwner = await vk.baseDao.findByWhereJson({
+		let myCar = await vk.baseDao.findByWhereJson({
 			dbName: DB_NAME,
-			whereJson: { plate: plate.toUpperCase() }
+			whereJson: { uid }
 		});
 
-		if (plateOwner) {
+		if (myCar) {
 			await vk.baseDao.deleteById({
 				dbName: DB_NAME,
-				id: plateOwner._id
+				id: myCar._id
 			});
 			res.msg = '删除成功';
 		} else {
