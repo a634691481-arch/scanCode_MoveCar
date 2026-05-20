@@ -319,6 +319,8 @@
 
       // 1. 透明背景（不填充，便于打印贴纸）
       ctx.clearRect(0, 0, W, H)
+      ctx.setFillStyle('rgba(255, 255, 255, 0.45)')
+      ctx.fillRect(0, 0, W, H)
 
       // 2. 四周主题色装饰边框
       const borderWidth = 14
@@ -346,7 +348,10 @@
         try {
           fs.writeFileSync(filePath, base64Data, 'base64')
           const r = 24
-          const x = qrImgX, y = qrImgY, w = qrImgSize, h = qrImgSize
+          const x = qrImgX,
+            y = qrImgY,
+            w = qrImgSize,
+            h = qrImgSize
 
           // 先画白色圆角背景（微信小程序码需要白底才能识别）
           ctx.setFillStyle('#ffffff')
@@ -361,13 +366,7 @@
 
           // 再画二维码图片（稍微内缩，露出白边形成圆角视觉效果）
           const innerPad = 8
-          ctx.drawImage(
-            filePath,
-            x + innerPad,
-            y + innerPad,
-            w - innerPad * 2,
-            h - innerPad * 2,
-          )
+          ctx.drawImage(filePath, x + innerPad, y + innerPad, w - innerPad * 2, h - innerPad * 2)
         } catch (e) {
           ctx.setFillStyle('#e5e7eb')
           ctx.fillRect(qrImgX, qrImgY, qrImgSize, qrImgSize)
