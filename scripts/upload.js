@@ -155,6 +155,40 @@ function info(label, value) {
   console.log(`  ${chalk.gray(label)}  ${chalk.white(value)}`)
 }
 
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B'
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+  return (bytes / 1024 / 1024).toFixed(2) + ' MB'
+}
+
+function getBuildStats(dir) {
+  try {
+    let totalSize = 0, fileCount = 0
+    function walk(d) {
+      for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+        const p = path.join(d, entry.name)
+        if (entry.isDirectory()) walk(p)
+        else { totalSize += fs.statSync(p).size; fileCount++ }
+      }
+    }
+    walk(dir)
+    return { size: formatSize(totalSize), files: fileCount }
+  } catch {
+    return null
+  }
+}
+
+function getGitInfo() {
+  try {
+    const branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8', cwd: ROOT }).trim()
+    const hash = execSync('git rev-parse --short HEAD', { encoding: 'utf-8', cwd: ROOT }).trim()
+    const dirty = execSync('git status --porcelain', { encoding: 'utf-8', cwd: ROOT }).trim().length > 0
+    return { branch, hash, dirty }
+  } catch {
+    return null
+  }
+}
+
 // ====== 主流程 ======
 
 async function main() {
@@ -179,27 +213,65 @@ async function main() {
   }
 
   const developer = getDeveloperName()
-  const desc = process.argv[2] || `${developer} 提交 v${version} ${new Date().toLocaleString('zh-CN')}`
   const skipBuild = process.argv.includes('--skip-build')
+  const descArg = process.argv.find((arg, i) => i >= 2 && !arg.startsWith('--'))
+  const desc = descArg || `${developer} 提交 v${version} ${new Date().toLocaleString('zh-CN')}`
+  let hxCli = null
+
+  // 打印项目信息
+  const gitInfo = getGitInfo()
+  const manifest = readManifest()
+  console.log(
+    boxen(
+      [
+        `${chalk.bold('项目')}      ${chalk.white(manifest.name || path.basename(ROOT))}`,
+        `${chalk.bold('AppID')}     ${chalk.cyan(appid)}`,
+        `${chalk.bold('版本')}      ${chalk.cyan(version)} ${chalk.gray(`(code: ${versionCode})`)}`,
+        gitInfo
+          ? `${chalk.bold('Git')}       ${chalk.white(gitInfo.branch)}@${chalk.gray(gitInfo.hash)}${gitInfo.dirty ? chalk.yellow(' (有未提交修改)') : ''}`
+          : '',
+        `${chalk.bold('开发者')}    ${chalk.cyan(developer)}`,
+        `${chalk.bold('描述')}      ${chalk.white(desc)}`,
+      ].filter(Boolean).join('\n'),
+      {
+        padding: { left: 1, right: 1, top: 0, bottom: 0 },
+        borderColor: 'gray',
+        borderStyle: 'round',
+        dimBorder: true,
+      },
+    ),
+  )
+  console.log()
 
   // Step 1: 构建
   if (!skipBuild) {
     const buildSpinner = ora({ text: chalk.cyan('构建微信小程序...'), prefixText: '  ' }).start()
-    const hxCli = getHBuilderXCli()
+    hxCli = getHBuilderXCli()
     if (hxCli) {
       const projectName = path.basename(ROOT)
       // 备份 manifest.json（HBuilderX CLI 构建时会修改源文件，如清空 appid）
       const manifestBackup = fs.readFileSync(MANIFEST_PATH, 'utf-8')
       try {
         buildSpinner.stop()
-        await runCommand(hxCli, ['publish', '--platform', 'mp-weixin', '--project', projectName, '--upload', 'true'])
-        console.log(`  ${chalk.green(figures.tick)} ${chalk.green('构建完成')}`)
+        // 使用 publish mp-weixin 子命令 + 完整 CI 参数，编译后直接上传，不打开开发者工具
+        await runCommand(hxCli, [
+          'publish', 'mp-weixin',
+          '--project', projectName,
+          '--appid', appid,
+          '--upload', 'true',
+          '--version', version,
+          '--privatekey', KEY_PATH,
+          '--description', desc,
+          '--robot', String(UPLOAD_CONFIG.robot),
+        ])
+        console.log(`  ${chalk.green(figures.tick)} ${chalk.green('构建并上传完成')}`)
       } catch {
         buildSpinner.stop()
-        warn('HBuilderX CLI 构建失败，尝试使用已有构建产物...')
+        warn('HBuilderX CLI 构建/上传失败')
+      } finally {
+        // 恢复 manifest.json，防止 HBuilderX 修改源文件
+        fs.writeFileSync(MANIFEST_PATH, manifestBackup, 'utf-8')
       }
-      // 恢复 manifest.json，防止 HBuilderX 修改源文件
-      fs.writeFileSync(MANIFEST_PATH, manifestBackup, 'utf-8')
     } else {
       buildSpinner.stop()
       warn('未找到 HBuilderX CLI，跳过自动构建')
@@ -209,58 +281,68 @@ async function main() {
     console.log(`  ${chalk.gray(figures.arrowRight)} ${chalk.gray('跳过构建 (--skip-build)')}`)
   }
 
-  if (!fs.existsSync(PROJECT_PATH)) {
-    fatal(`构建产物不存在\n  ${chalk.gray('请先在 HBuilderX 中执行「发行 → 小程序-微信」构建')}`)
-  }
+  // Step 2: 上传（兜底：如果 HBuilderX CLI 未直接上传，则用 miniprogram-ci）
+  let uploaded = false
+  if (skipBuild || !hxCli) {
+    if (!fs.existsSync(PROJECT_PATH)) {
+      fatal(`构建产物不存在\n  ${chalk.gray('请先在 HBuilderX 中执行「发行 → 小程序-微信」构建')}`)
+    }
 
-  // Step 2: 上传
-  console.log()
-  console.log(
-    boxen(
-      [
-        `${chalk.bold('AppID')}     ${chalk.cyan(appid)}`,
-        `${chalk.bold('版本')}      ${chalk.cyan(version)}`,
-        `${chalk.bold('开发者')}    ${chalk.cyan(developer)}`,
-        `${chalk.bold('描述')}      ${chalk.white(desc)}`,
-      ].join('\n'),
-      {
-        padding: { left: 1, right: 1, top: 0, bottom: 0 },
-        borderColor: 'cyan',
-        borderStyle: 'round',
-        title: '上传信息',
-        titleAlignment: 'left',
-      },
-    ),
-  )
-  console.log()
+    console.log()
+    console.log(
+      boxen(
+        [
+          `${chalk.bold('AppID')}     ${chalk.cyan(appid)}`,
+          `${chalk.bold('版本')}      ${chalk.cyan(version)}`,
+          `${chalk.bold('开发者')}    ${chalk.cyan(developer)}`,
+          `${chalk.bold('描述')}      ${chalk.white(desc)}`,
+        ].join('\n'),
+        {
+          padding: { left: 1, right: 1, top: 0, bottom: 0 },
+          borderColor: 'cyan',
+          borderStyle: 'round',
+          title: '上传信息',
+          titleAlignment: 'left',
+        },
+      ),
+    )
+    console.log()
 
-  const uploadSpinner = ora({ text: chalk.cyan('正在上传体验版...'), prefixText: '  ' }).start()
+    const uploadSpinner = ora({ text: chalk.cyan('正在上传体验版...'), prefixText: '  ' }).start()
 
-  const project = new ci.Project({
-    appid,
-    type: 'miniProgram',
-    projectPath: PROJECT_PATH,
-    privateKeyPath: KEY_PATH,
-    ignores: ['node_modules/**/*'],
-  })
-
-  try {
-    await ci.upload({
-      project,
-      version,
-      desc,
-      ...UPLOAD_CONFIG,
+    const project = new ci.Project({
+      appid,
+      type: 'miniProgram',
+      projectPath: PROJECT_PATH,
+      privateKeyPath: KEY_PATH,
+      ignores: ['node_modules/**/*'],
     })
-    uploadSpinner.succeed(chalk.green('上传成功'))
-  } catch (err) {
-    uploadSpinner.fail(chalk.red('上传失败'))
-    fatal(err.message || String(err))
+
+    try {
+      await ci.upload({
+        project,
+        version,
+        desc,
+        ...UPLOAD_CONFIG,
+      })
+      uploadSpinner.succeed(chalk.green('上传成功'))
+      uploaded = true
+    } catch (err) {
+      uploadSpinner.fail(chalk.red('上传失败'))
+      fatal(err.message || String(err))
+    }
+  } else {
+    uploaded = true
+    console.log(`  ${chalk.green(figures.tick)} ${chalk.green('已通过 HBuilderX CLI 完成上传')}`)
   }
 
   // Step 3: 版本号自增
   const newVersion = bumpVersion(version)
   const newCode = versionCode + 1
   updateManifestVersion(newVersion, newCode)
+
+  // 构建产物统计
+  const buildStats = fs.existsSync(PROJECT_PATH) ? getBuildStats(PROJECT_PATH) : null
 
   // 结果
   console.log()
@@ -272,7 +354,12 @@ async function main() {
         `${chalk.gray('当前版本')}  ${chalk.white.bold(version)}`,
         `${chalk.gray('下次版本')}  ${chalk.cyan.bold(newVersion)} ${chalk.gray('(已自动更新)')}`,
         `${chalk.gray('描述信息')}  ${chalk.white(desc)}`,
-      ].join('\n'),
+        buildStats
+          ? `${chalk.gray('构建产物')}  ${chalk.white(buildStats.size)} / ${chalk.white(buildStats.files + ' 个文件')}`
+          : '',
+        `${chalk.gray('上传方式')}  ${chalk.white(hxCli ? 'HBuilderX CLI' : 'miniprogram-ci')}`,
+        `${chalk.gray('体验版')}    ${chalk.cyan.underline('https://mp.weixin.qq.com')}`,
+      ].filter(Boolean).join('\n'),
       { padding: 1, borderColor: 'green', borderStyle: 'round' },
     ),
   )
