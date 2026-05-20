@@ -326,9 +326,9 @@
       const borderWidth = 14
       ctx.setFillStyle(primaryColor)
       ctx.fillRect(0, 0, W, borderWidth)
-      // ctx.fillRect(0, H - borderWidth, W, borderWidth)
-      // ctx.fillRect(0, 0, borderWidth, H)
-      // ctx.fillRect(W - borderWidth, 0, borderWidth, H)
+      ctx.fillRect(0, H - borderWidth, W, borderWidth)
+      ctx.fillRect(0, 0, borderWidth, H)
+      ctx.fillRect(W - borderWidth, 0, borderWidth, H)
 
       // 3. 左侧二维码区域（垂直居中，透明背景+圆角裁剪）
       const qrAreaX = 50
@@ -383,12 +383,12 @@
       ctx.setFillStyle('#fff')
       ctx.font = 'bold 54px sans-serif'
       ctx.setTextAlign('center')
-      ctx.fillText('\uD83D\uDCF1 微信扫码', rightCenterX, contentCenterY - 100)
+      ctx.fillText('微信扫码', rightCenterX, contentCenterY - 100)
 
       // 副标题
       ctx.setFillStyle('#fff')
       ctx.font = 'bold 54px sans-serif'
-      ctx.fillText('\uD83D\uDE97 呼叫车主', rightCenterX, contentCenterY - 32)
+      ctx.fillText('呼叫车主', rightCenterX, contentCenterY - 32)
 
       // 分隔线
       ctx.setStrokeStyle('rgba(0,0,0,0.1)')
@@ -400,7 +400,7 @@
 
       // 标签
       const tagY = contentCenterY + 48
-      const tagText = '\uD83D\uDCDE隐私通话 · 快速联系'
+      const tagText = '隐私通话 · 快速联系'
       const tagW = 300
       const tagH = 50
       const tagX = rightCenterX - tagW / 2
