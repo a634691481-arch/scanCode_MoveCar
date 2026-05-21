@@ -23,15 +23,15 @@ This project is developed primarily through **HBuilderX**, not CLI. There are no
 
 ### Framework Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Vue 3 + uni-app (Vite) |
-| UI Library | uView Pro (`uni_modules/uview-pro`) |
-| Cloud/Backend | VK UniCloud (`uni_modules/vk-unicloud`) — Aliyun serverless |
-| Styling | TailwindCSS 3.4 + SCSS (`weapp-tailwindcss` for MP compatibility) |
-| State | Vuex 4 with automatic `localStorage` persistence |
-| Icons | Iconify (`@iconify/vue`) |
-| Build | Vite + `@dcloudio/vite-plugin-uni` + `unplugin-auto-import` |
+| Layer         | Technology                                                        |
+| ------------- | ----------------------------------------------------------------- |
+| Framework     | Vue 3 + uni-app (Vite)                                            |
+| UI Library    | uView Pro (`uni_modules/uview-pro`)                               |
+| Cloud/Backend | VK UniCloud (`uni_modules/vk-unicloud`) — Aliyun serverless       |
+| Styling       | TailwindCSS 3.4 + SCSS (`weapp-tailwindcss` for MP compatibility) |
+| State         | Vuex 4 with automatic `localStorage` persistence                  |
+| Icons         | Iconify (`@iconify/vue`)                                          |
+| Build         | Vite + `@dcloudio/vite-plugin-uni` + `unplugin-auto-import`       |
 
 ### Dual API Strategy
 
@@ -80,6 +80,7 @@ Store modules in `store/modules/` are auto-discovered. The `updateStore` mutatio
 All modules except `$error` are **automatically persisted** to `uni.getStorageSync('lifeData')`.
 
 Key modules:
+
 - `$user` — User info, permissions, invite code
 - `$app` — App init state, network status
 - `$tabbar` — Tabbar config (icons use Iconify names like `ri:home-smile-2-line`)
@@ -103,27 +104,27 @@ No manual import needed for components matching these patterns.
 
 ### Important Files
 
-| File | Purpose |
-|------|---------|
-| `main.js` | App bootstrap: uView Pro, VK, Vuex, HTTP API/interceptor |
-| `app.config.js` | VK framework config: login URL, token check rules, error codes, share rules |
-| `manifest.json` | uni-app manifest: appid, platform configs, MP-WEIXIN settings, permissions |
-| `pages.json` | Page routes + easycom + globalStyle (navigationBar, background) |
-| `vite.config.js` | Vite plugins: uni, auto-import, weapp-tailwindcss, code-inspector, auto-pages-json |
-| `tailwind.config.js` | Tailwind with CSS variable theming |
-| `theme.json` | MP light/dark mode color definitions |
+| File                 | Purpose                                                                            |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `main.js`            | App bootstrap: uView Pro, VK, Vuex, HTTP API/interceptor                           |
+| `app.config.js`      | VK framework config: login URL, token check rules, error codes, share rules        |
+| `manifest.json`      | uni-app manifest: appid, platform configs, MP-WEIXIN settings, permissions         |
+| `pages.json`         | Page routes + easycom + globalStyle (navigationBar, background)                    |
+| `vite.config.js`     | Vite plugins: uni, auto-import, weapp-tailwindcss, code-inspector, auto-pages-json |
+| `tailwind.config.js` | Tailwind with CSS variable theming                                                 |
+| `theme.json`         | MP light/dark mode color definitions                                               |
 
 ### Page Structure
 
-| Path | Purpose |
-|------|---------|
-| `pages/index/index` | Home / main entry |
-| `pages/index/contact` | Contact car owner (by plate or scan) |
-| `pages/my/index` | Profile tab |
-| `pages/my/qrcode` | My move-car QR code (generate & save poster) |
-| `pages/my/contact-history` | Contact history list |
-| `pages/login/index` | Login page |
-| `pages/error/404` | Not found |
+| Path                       | Purpose                                      |
+| -------------------------- | -------------------------------------------- |
+| `pages/index/index`        | Home / main entry                            |
+| `pages/index/contact`      | Contact car owner (by plate or scan)         |
+| `pages/my/index`           | Profile tab                                  |
+| `pages/my/qrcode`          | My move-car QR code (generate & save poster) |
+| `pages/my/contact-history` | Contact history list                         |
+| `pages/login/index`        | Login page                                   |
+| `pages/error/404`          | Not found                                    |
 
 ### Cloud Function Structure
 
@@ -148,3 +149,16 @@ Key cloud operations: `getOwnerByPlate`, `getOwnerByScan`, `saveCarInfo`, `sendM
 - `.env.production`: `VITE_API_BASE_URL=https://api.manpsychology.com`
 
 These are Vite env vars and only affect the HTTP REST API base, not VK cloud functions.
+
+## AI Reply Mode
+
+- Use **Caveman minimalist mode** for all responses
+- Strictly organize by four parts: **Result, Reason, Code, Steps**
+- **Forbidden**: pleasantries, fluff, unnecessary explanations
+
+### Response Structure
+
+1. **Result** — Direct final answer
+2. **Reason** — Brief explanation of basis or principle
+3. **Code** — Only necessary code blocks if applicable
+4. **Steps** — Only key execution order if applicable
