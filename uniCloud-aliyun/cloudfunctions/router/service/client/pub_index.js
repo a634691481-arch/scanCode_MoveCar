@@ -784,6 +784,15 @@ const cloudObject = {
 		};
 		return res;
 	},
+	// 获取产品介绍页展示状态（true=展示产品介绍页，false=直接进入首页）
+	getProductIntroStatus: async function(data) {
+		let res = { code: 0, msg: '' };
+		// 默认返回 true，跳转到产品介绍页面
+		res.data = {
+			showIntro: true,
+		};
+		return res;
+	},
 };
 
 module.exports = cloudObject;
