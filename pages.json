@@ -101,6 +101,12 @@
 				"disableScroll": true,
 				"enablePullDownRefresh": false
 			}
+		},
+		{
+			"path": "pages/product-intro/index",
+			"style": {
+				"navigationBarTitleText": "产品介绍"
+			}
 		}
 	],
 	"globalStyle": {
