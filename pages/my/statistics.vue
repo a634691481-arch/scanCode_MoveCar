@@ -198,7 +198,6 @@
       const res = await vk.callFunction({
         url: 'client/pub_index.getUserStatistics',
         data: { uid },
-        needAlert: false,
       })
 
       vk.hideLoading()

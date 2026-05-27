@@ -104,7 +104,6 @@
       const res = await vk.callFunction({
         url: 'client/pub_index.getContactHistory',
         data: { uid, pageIndex: page, pageSize: limit },
-        needAlert: false,
       })
 
       if (res.code === 0 && res.data) {
@@ -163,7 +162,6 @@
       const res = await vk.callFunction({
         url: 'client/pub_index.deleteContactHistory',
         data: { uid, id },
-        needAlert: false,
       })
       vk.hideLoading()
       if (res.code === 0) {
@@ -206,7 +204,6 @@
       const res = await vk.callFunction({
         url: 'client/pub_index.clearContactHistory',
         data: { uid },
-        needAlert: false,
       })
       vk.hideLoading()
       if (res.code === 0) {

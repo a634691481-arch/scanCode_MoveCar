@@ -94,6 +94,17 @@
           <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
         </view>
 
+        <view class="menu-item" @click="toPrivacy">
+          <view class="menu-icon" style="background: #f0f9ff">
+            <yy-icon name="ri:shield-check-line" size="20" color="#0284c7" />
+          </view>
+          <view class="menu-content">
+            <text class="menu-label">隐私与协议</text>
+            <text class="menu-desc">用户协议、隐私政策及信息说明</text>
+          </view>
+          <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
+        </view>
+
         <view class="menu-item" @click="showAbout">
           <view class="menu-icon" style="background: #faf5ff">
             <yy-icon name="ri:information-line" size="20" color="#9333ea" />
@@ -203,8 +214,8 @@
       const res = await vk.callFunction({
         url: 'client/pub_index.getMyCarList',
         data: { uid },
-        needAlert: false,
       })
+      console.log(333333333, res)
       if (res.code === 0 && res.data && res.data.carList && res.data.carList.length > 0) {
         const list = res.data.carList
         const defaultCar = list.find(c => c.isDefault) || list[0]
@@ -246,6 +257,10 @@
 
   function toFeedback() {
     vk.navigateTo('/pages/my/feedback')
+  }
+
+  function toPrivacy() {
+    vk.navigateTo('/pages/privacy/index')
   }
 
   function showAbout() {

@@ -271,7 +271,6 @@
       const res = await vk.callFunction({
         url: 'client/pub_index.getOwnerByPlate',
         data: { plate },
-        needAlert: false,
       })
 
       vk.hideLoading()
@@ -339,7 +338,6 @@
             vk.callFunction({
               url: 'client/pub_index.getOwnerByScan',
               data: { plate: data.plate, phone: data.phone },
-              needAlert: false,
             })
               .then(res => {
                 vk.hideLoading()
@@ -406,7 +404,6 @@
       const res = await vk.callFunction({
         url: 'client/pub_index.getMyCarList',
         data: { uid },
-        needAlert: false,
       })
 
       vk.hideLoading()
@@ -512,7 +509,6 @@
   const scanIconWrapStyle = computed(() => ({
     boxShadow: `0 2px 8px ${uni.$u.color.primary}1f`,
   }))
-
 </script>
 
 <style lang="scss" scoped>
@@ -938,5 +934,4 @@
     line-height: 1.5;
     flex: 1;
   }
-
 </style>

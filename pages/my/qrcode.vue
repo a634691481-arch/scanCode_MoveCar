@@ -189,7 +189,6 @@
       const res = await vk.callFunction({
         url: 'client/pub_index.getMyCarList',
         data: { uid },
-        needAlert: false,
       })
 
       if (res.code === 0 && res.data && res.data.carList && res.data.carList.length > 0) {
@@ -219,7 +218,6 @@
       const res = await vk.callFunction({
         url: 'client/pub_index.generateMoveCarQRCode',
         data: { uid },
-        needAlert: false,
       })
       if (res.code === 0 && res.data && res.data.base64) {
         qrBase64.value = res.data.base64

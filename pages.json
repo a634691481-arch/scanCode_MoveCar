@@ -107,6 +107,14 @@
 			"style": {
 				"navigationBarTitleText": "产品介绍"
 			}
+		},
+		{
+			"path": "pages/privacy/index",
+			"style": {
+				"disableScroll": true,
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "隐私与协议"
+			}
 		}
 	],
 	"globalStyle": {

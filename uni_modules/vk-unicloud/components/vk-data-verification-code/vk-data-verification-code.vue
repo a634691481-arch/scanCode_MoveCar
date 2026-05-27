@@ -270,7 +270,7 @@ export default {
 			}
 			that.tips = that.locale.sending;
 			vk.userCenter.sendSmsCode({
-				needAlert: false,
+				
 				data: {
 					mobile,
 					type,

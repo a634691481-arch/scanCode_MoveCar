@@ -214,28 +214,9 @@
       />
     </template>
   </yy-paging>
-
-  <!-- 隐私安全提示 -->
-  <yy-tip-modal
-    v-model="showPrivacyTip"
-    title="隐私与数据安全"
-    :list="privacyTips"
-    confirm-text="我知道了"
-    :active-color="uni.$u.color.primary"
-  />
 </template>
 
 <script setup>
-  const PRIVACY_STORAGE_KEY = 'has_seen_privacy_tip_car'
-
-  const showPrivacyTip = ref(false)
-
-  const privacyTips = [
-    '您填写的车牌号、手机号仅用于挪车联系，不会公开显示',
-    '开启"隐藏真实手机号"后，他人扫码无法看到您的真实号码',
-    '所有数据通过加密通道传输，采用加密存储',
-    '您可随时修改或删除车辆信息',
-  ]
   // ====== yy-paging 配置 ======
   const pagingConfig = ref({
     auto: false,
@@ -300,20 +281,11 @@
 
   onLoad(() => {
     loadInfo()
-    checkPrivacyTip()
   })
 
   onShow(() => {
     loadInfo()
   })
-
-  function checkPrivacyTip() {
-    const hasSeen = vk.getStorageSync(PRIVACY_STORAGE_KEY)
-    if (!hasSeen) {
-      showPrivacyTip.value = true
-      vk.setStorageSync(PRIVACY_STORAGE_KEY, true)
-    }
-  }
 
   function scroll(e) {
     state.value.isScroll = e.detail.scrollTop > 0
@@ -393,7 +365,6 @@
       const res = await vk.callFunction({
         url: 'client/pub_index.getMyCarList',
         data: { uid },
-        needAlert: false,
       })
 
       if (res.code === 0 && res.data) {
@@ -486,7 +457,6 @@
           receiveNotify: form.value.receiveNotify,
           pushToken: form.value.pushToken,
         },
-        needAlert: false,
       })
 
       vk.hideLoading()

@@ -253,7 +253,6 @@
           contactType,
           ownerPhone: ownerInfo.value.phone,
         },
-        needAlert: false,
       })
     } catch (err) {
       // 静默失败，不影响主流程
@@ -286,7 +285,6 @@
           plate: ownerInfo.value.plate,
           token,
         },
-        needAlert: false,
       })
       vk.hideLoading()
 

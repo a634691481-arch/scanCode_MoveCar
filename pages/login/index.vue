@@ -65,6 +65,14 @@
           </view>
         </view>
       </view>
+
+      <!-- 隐私协议入口 -->
+      <view class="flex justify-center mt-4">
+        <text class="text-xs text-gray-400">
+          登录即代表同意
+          <text class="underline" :style="{ color: uni.$u.color.primary }" @click="toPrivacy">《隐私与协议》</text>
+        </text>
+      </view>
     </view>
 
     <!-- 底部固定按钮 -->
@@ -90,6 +98,11 @@
   // 点击登录按钮
   function onLogin() {
     doLogin()
+  }
+
+  // 跳转到隐私协议页面
+  function toPrivacy() {
+    vk.navigateTo('/pages/privacy/index')
   }
 
   // 执行登录
