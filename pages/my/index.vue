@@ -72,17 +72,6 @@
           <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
         </view>
 
-        <view class="menu-item" @click="shareApp">
-          <view class="menu-icon" style="background: #f0fdf4">
-            <yy-icon name="ri:share-forward-line" size="20" color="#16a34a" />
-          </view>
-          <view class="menu-content">
-            <text class="menu-label">分享给朋友</text>
-            <text class="menu-desc">推荐挪车助手给好友</text>
-          </view>
-          <yy-icon name="ri:arrow-right-s-line" size="20" color="#9ca3af" />
-        </view>
-
         <view class="menu-item" @click="showThemePicker">
           <view class="menu-icon" :style="{ background: uni.$u.color.primaryLight }">
             <yy-icon name="ri:palette-line" size="20" :color="uni.$u.color.primary" />
@@ -253,14 +242,6 @@
 
   function toContactHistory() {
     vk.navigateTo('/pages/my/contact-history')
-  }
-
-  function shareApp() {
-    uni.showShareMenu({
-      withShareTicket: true,
-      menus: ['shareAppMessage', 'shareTimeline'],
-    })
-    vk.toast('请点击右上角分享')
   }
 
   function toFeedback() {
