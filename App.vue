@@ -8,9 +8,7 @@
         url: config.error.url,
       })
     },
-    onLaunch: function (options) {
-      // uni.vk.vuex.dispatch('$user/getConfig')
-
+    onLaunch: function () {
       if (config.debug) {
         // #ifndef APP-PLUS
         console.log(
@@ -22,31 +20,10 @@
         console.log('App Launch')
       }
       // #ifdef MP
-      uni.vk.updateManager.updateReady() // 此代码可以让小程序自动检测最新版本
+      uni.vk.updateManager.updateReady()
       // #endif
 
-      // 调用接口判断是否展示产品介绍页
-      this.checkProductIntro()
-    },
-
-    methods: {
-      async checkProductIntro() {
-        try {
-          let res = await vk.callFunction({
-            url: 'client/pub_index.getProductIntroStatus',
-            data: {},
-          })
-          console.log('🚀 ~ :39 ~ res:', res)
-          if (res.code === 0 && res.data && res.data.showIntro === true) {
-            vk.reLaunch({ url: '/pages/product-intro/index' })
-          }
-          // showIntro 为 false 或其他情况，不做处理（正常进入首页）
-        } catch (err) {
-          if (config.debug) {
-            console.error('checkProductIntro error:', err)
-          }
-        }
-      },
+      // 产品介绍页判断逻辑已移至 pages/index/middle.vue
     },
 
     onShow: function () {
