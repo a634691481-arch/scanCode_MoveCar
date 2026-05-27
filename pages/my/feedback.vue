@@ -61,9 +61,36 @@
       />
     </template>
   </yy-paging>
+
+  <!-- 隐私安全提示 -->
+  <yy-tip-modal
+    v-model="showPrivacyTip"
+    title="隐私与数据安全"
+    :list="privacyTips"
+    confirm-text="我知道了"
+    :active-color="uni.$u.color.primary"
+  />
 </template>
 
 <script setup>
+  const PRIVACY_STORAGE_KEY = 'has_seen_privacy_tip_feedback'
+
+  const showPrivacyTip = ref(false)
+
+  const privacyTips = [
+    '您提交的反馈信息仅用于改进服务，不会用于其他用途',
+    '联系方式为选填项，我们会严格保密您的个人信息',
+    '所有数据通过加密通道传输，采用加密存储',
+    '您可随时在"我的"页面查看或删除个人信息',
+  ]
+
+  onLoad(() => {
+    const hasSeen = vk.getStorageSync(PRIVACY_STORAGE_KEY)
+    if (!hasSeen) {
+      showPrivacyTip.value = true
+      vk.setStorageSync(PRIVACY_STORAGE_KEY, true)
+    }
+  })
   const pagingConfig = ref({
     auto: false,
     refresherEnabled: false,
